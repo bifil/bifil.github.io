@@ -52,174 +52,112 @@ const selectedWork = [
 	},
 ];
 
-function generateAnatomicalBrain(rotX = 0.2, rotY = 0.65, width = 84, height = 36) {
-	const points: Array<{ x: number; y: number; z: number; nx: number; ny: number; nz: number; sulcus: number; type: string }> = [];
-	const hemiCount = 2000;
-	for (let i = 0; i < hemiCount; i++) {
-		const phi = Math.acos(1 - (2 * (i + 0.5)) / hemiCount);
-		const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-		const sx = Math.sin(phi) * Math.cos(theta);
-		const sy = Math.cos(phi);
-		const sz = Math.sin(phi) * Math.sin(theta);
-		const signX = sx >= 0 ? 1 : -1;
-		const absSx = Math.abs(sx);
-
-		// Anatomical cranial proportions
-		const frontal = sz > 0 ? 1 + 0.24 * sz * (1 - sy * sy * 0.65) : 1;
-		const occipital = sz < 0 ? 1 + 0.14 * sz : 1;
-		const dome = sy > 0 ? 1 + 0.2 * sy * (1 - absSx * 0.45) : 1;
-		const rx = 0.86 * frontal * occipital;
-		const ry = 0.92 * dome;
-		const rz = 1.18 * frontal * occipital;
-
-		// 1. Temporal Lobe
-		let temporalLobe = 0;
-		if (sy < 0.05 && sy > -0.58 && sz > -0.28 && sz < 0.62) {
-			temporalLobe = Math.sin(((sy + 0.58) / 0.63) * Math.PI) * Math.sin(((sz + 0.28) / 0.9) * Math.PI) * 0.34;
-		}
-
-		// 2. Sylvian Fissure (Lateral Sulcus)
-		let sylvianFissure = 0;
-		if (sy > -0.26 && sy < 0.1 && sz > -0.22 && sz < 0.52 && absSx > 0.28) {
-			sylvianFissure = Math.sin(((sy + 0.26) / 0.36) * Math.PI) * 0.24;
-		}
-
-		// 3. Central Sulcus (Rolandic Fissure)
-		let centralSulcus = 0;
-		const centralDist = Math.abs(sz - 0.65 * sy - 0.08);
-		if (centralDist < 0.16 && sy > -0.25 && absSx > 0.2) {
-			centralSulcus = Math.cos((centralDist / 0.16) * (Math.PI / 2)) * 0.14;
-		}
-
-		// 4. Longitudinal Fissure
-		const longitudinalFissure = 0.14 * Math.exp(-Math.pow(absSx / 0.14, 2)) * (sy > -0.3 ? 1 : 0.35);
-
-		// 5. Serpentine Cortical Convolutions (Gyri & Sulci)
-		const wx = Math.sin(8.0 * sy + 5.5 * sz) * 0.28;
-		const wy = Math.cos(7.5 * absSx + 6.0 * sz) * 0.28;
-		const wz = Math.sin(7.0 * absSx + 7.5 * sy) * 0.28;
-		const pxWarp = absSx + wx;
-		const pyWarp = sy + wy;
-		const pzWarp = sz + wz;
-
-		const fold1 = Math.sin(17.0 * pxWarp + 13.0 * pzWarp);
-		const fold2 = Math.cos(16.0 * pyWarp + 12.0 * pxWarp + Math.sin(14.0 * pzWarp) * 1.6);
-		const fold3 = Math.sin(21.0 * pxWarp - 16.0 * pyWarp) * 0.4;
-		const rawFold = fold1 * 0.52 + fold2 * 0.48 + fold3;
-		const sulcusDisplacement = Math.sign(rawFold) * Math.pow(Math.abs(rawFold), 0.72) * 0.11;
-
-		const totalDisplacement = temporalLobe - sylvianFissure - centralSulcus + sulcusDisplacement;
-		const px = signX * (absSx * rx + 0.16 - longitudinalFissure) * (1 + totalDisplacement);
-		const py = (sy * ry + 0.18) * (1 + totalDisplacement);
-		const pz = (sz * rz + 0.08) * (1 + totalDisplacement);
-
-		if (py < -0.15 && pz < -0.32 && absSx < 0.8) continue;
-		if (py < -0.38 && absSx < 0.35 && pz > -0.35 && pz < 0.2) continue;
-
-		const foldGradX = Math.cos(17.0 * pxWarp) * 0.25;
-		const foldGradY = -Math.sin(16.0 * pyWarp) * 0.25;
-		const foldGradZ = Math.cos(13.0 * pzWarp) * 0.25;
-		const nx = sx * signX + foldGradX;
-		const ny = sy + foldGradY;
-		const nz = sz + foldGradZ;
-		const nLen = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
-
-		points.push({
-			x: px,
-			y: py,
-			z: pz,
-			nx: nx / nLen,
-			ny: ny / nLen,
-			nz: nz / nLen,
-			sulcus: rawFold,
-			type: 'cortex',
-		});
-	}
-
-	const cerebCount = 550;
-	for (let i = 0; i < cerebCount; i++) {
-		const phi = Math.acos(1 - (2 * (i + 0.5)) / cerebCount);
-		const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-		const sx = Math.sin(phi) * Math.cos(theta);
-		const sy = Math.cos(phi);
-		const sz = Math.sin(phi) * Math.sin(theta);
-		const signX = sx >= 0 ? 1 : -1;
-		const absSx = Math.abs(sx);
-		const folia = Math.sin(sy * 40) * 0.045;
-		const px = signX * (absSx * 0.65 + 0.09) * (1 + folia);
-		const py = (sy * 0.44 - 0.46) * (1 + folia);
-		const pz = (sz * 0.54 - 0.62) * (1 + folia);
-		points.push({
-			x: px,
-			y: py,
-			z: pz,
-			nx: sx * signX,
-			ny: sy,
-			nz: sz,
-			sulcus: folia * 8,
-			type: 'cerebellum',
-		});
-	}
-
-	const stemCount = 220;
-	for (let i = 0; i < stemCount; i++) {
-		const t = i / stemCount;
-		const angle = ((i % 16) / 16) * Math.PI * 2;
-		const py = -0.28 - t * 0.68;
-		const ponsBulge = Math.exp(-Math.pow((py + 0.48) / 0.12, 2)) * 0.11;
-		const radius = (0.17 + ponsBulge) * (1 - t * 0.28);
-		const px = Math.cos(angle) * radius * 0.92;
-		const pz = Math.sin(angle) * radius + ponsBulge * 0.6 - 0.14;
-		points.push({
-			x: px,
-			y: py,
-			z: pz,
-			nx: Math.cos(angle),
-			ny: 0,
-			nz: Math.sin(angle),
-			sulcus: 0,
-			type: 'brainstem',
-		});
-	}
-
+function generateLateralBrainMap(width = 92, height = 40) {
 	const grid = Array.from({ length: height }, () => Array(width).fill(' '));
-	const zbuf = Array.from({ length: height }, () => Array(width).fill(-999));
-	const palette = [' ', '.', ':', '-', '=', '+', '*', '#', '%', '@'];
-	const cosY = Math.cos(rotY),
-		sinY = Math.sin(rotY);
-	const cosX = Math.cos(rotX),
-		sinX = Math.sin(rotX);
-	const nlx = 0.42,
-		nly = 0.62,
-		nlz = 0.66;
-	for (const pt of points) {
-		const x1 = pt.x * cosY + pt.z * sinY;
-		const y1 = pt.y;
-		const z1 = -pt.x * sinY + pt.z * cosY;
-		const x2 = x1;
-		const y2 = y1 * cosX - z1 * sinX;
-		const z2 = y1 * sinX + z1 * cosX;
-		const nx1 = pt.nx * cosY + pt.nz * sinY;
-		const ny1 = pt.ny;
-		const nz1 = -pt.nx * sinY + pt.nz * cosY;
-		const nx2 = nx1;
-		const ny2 = ny1 * cosX - nz1 * sinX;
-		const nz2 = ny1 * sinX + nz1 * cosX;
-		const factor = 46 / (3.0 + z2);
-		const px = Math.floor(width * 0.58 + x2 * factor * 2.0);
-		const py = Math.floor(height / 2 - y2 * factor);
-		if (px >= 0 && px < width && py >= 0 && py < height && z2 > zbuf[py][px]) {
-			zbuf[py][px] = z2;
-			const dot = Math.max(0, nx2 * nlx + ny2 * nly + nz2 * nlz);
-			const gyriBoost = pt.sulcus * 0.22;
-			const intensity = Math.min(1, Math.max(0, dot * 0.48 + ((z2 + 1.5) / 3.0) * 0.35 + gyriBoost + 0.15));
-			grid[py][px] = palette[Math.floor(intensity * (palette.length - 1))];
+	const intensityGrid = Array.from({ length: height }, () => Array(width).fill(0));
+	const typeGrid = Array.from({ length: height }, () => Array(width).fill(''));
+
+	for (let r = 0; r < height; r++) {
+		for (let c = 0; c < width; c++) {
+			const u = (c / (width - 1) - 0.5) * 2.3;
+			const v = (0.5 - r / (height - 1)) * 2.1;
+
+			const uCortex = u - 0.02;
+			const vCortex = v - 0.12;
+			const frontalTaper = u > 0 ? 1.0 - 0.08 * u : 1.0 + 0.12 * u;
+			const topDome = v > 0 ? 1.0 - 0.05 * v : 1.0;
+
+			const rOuter =
+				Math.pow(Math.abs(uCortex / (0.92 * frontalTaper)), 2.3) +
+				Math.pow(Math.abs(vCortex / (0.8 * topDome)), 2.3);
+
+			const cortexMask = rOuter <= 1.0;
+			const sylvianFissure =
+				v > -0.18 &&
+				v < 0.04 &&
+				u > -0.05 &&
+				u < 0.68 &&
+				Math.sin(((v + 0.18) / 0.22) * Math.PI) > 0.65 &&
+				u > 0.05 + (0.04 - v) * 2.0;
+
+			const cerebellarCutout = u < 0.08 && v < -0.15 && (u < -0.12 || v < -0.28);
+			const inCortex = cortexMask && !sylvianFissure && !cerebellarCutout;
+
+			const uCereb = (u + 0.42) / 0.36;
+			const vCereb = (v + 0.45) / 0.25;
+			const rCereb = uCereb * uCereb + vCereb * vCereb;
+			const inCerebellum = rCereb <= 1.0 && u < 0.02 && v < -0.16 && v > -0.74;
+
+			const inBrainstem =
+				u >= -0.15 &&
+				u <= 0.14 &&
+				v <= -0.25 &&
+				v >= -0.92 &&
+				u <= 0.1 + 0.08 * Math.exp(-Math.pow((v + 0.52) / 0.14, 2));
+
+			if (inCortex) {
+				const w1 = Math.sin(7.5 * v + 4.5 * u) * 0.25;
+				const w2 = Math.cos(7.0 * u + 5.0 * v) * 0.25;
+				const uw = u + w1;
+				const vw = v + w2;
+
+				const centralDist = Math.abs(u - 0.55 * v - 0.12);
+				const isCentralSulcus = centralDist < 0.06 && v > -0.15;
+
+				const g1 = Math.sin(15.0 * uw + 11.0 * vw);
+				const g2 = Math.cos(14.0 * vw - 10.0 * uw + Math.sin(12.0 * uw) * 1.5);
+				const g3 = Math.sin(19.0 * uw - 15.0 * vw) * 0.4;
+				const gyriWave = g1 * 0.55 + g2 * 0.45 + g3;
+
+				const edge = rOuter > 0.88;
+				const intensity = isCentralSulcus
+					? 0.15
+					: edge
+						? 0.85
+						: Math.max(0.1, Math.min(1.0, 0.5 + gyriWave * 0.45));
+
+				intensityGrid[r][c] = intensity;
+				typeGrid[r][c] = isCentralSulcus ? 'sulcus' : edge ? 'edge' : 'gyrus';
+			} else if (inCerebellum) {
+				const folia = (Math.sin(v * 45.0) + 1.0) * 0.5;
+				const edge = rCereb > 0.85;
+				intensityGrid[r][c] = edge ? 0.75 : 0.35 + folia * 0.45;
+				typeGrid[r][c] = 'cerebellum';
+			} else if (inBrainstem) {
+				const edge = u <= -0.13 || u >= 0.08;
+				intensityGrid[r][c] = edge ? 0.7 : 0.45;
+				typeGrid[r][c] = 'brainstem';
+			}
 		}
 	}
-	return grid.map((r) => r.join('')).join('\n');
+
+	const palette = [' ', '.', ':', '-', '=', '+', '*', '#', '%', '@'];
+	const cerebChars = ['-', '~', '=', '≡', '='];
+
+	for (let r = 0; r < height; r++) {
+		for (let c = 0; c < width; c++) {
+			const type = typeGrid[r][c];
+			const val = intensityGrid[r][c];
+			if (!type) continue;
+
+			if (type === 'cerebellum') {
+				const idx = Math.min(cerebChars.length - 1, Math.floor(val * cerebChars.length));
+				grid[r][c] = cerebChars[idx];
+			} else if (type === 'brainstem') {
+				grid[r][c] = val > 0.6 ? '|' : ':';
+			} else if (type === 'sulcus') {
+				grid[r][c] = '.';
+			} else {
+				const idx = Math.min(palette.length - 1, Math.floor(val * (palette.length - 1)) + 1);
+				grid[r][c] = palette[idx];
+			}
+		}
+	}
+
+	return grid.map((row) => row.join('')).join('\n');
 }
 
-const fallbackAscii = generateAnatomicalBrain(0.2, 0.65, 84, 36);
+const fallbackAscii = generateLateralBrainMap(92, 40);
 
 const structuredData = {
 	'@context': 'https://schema.org',
@@ -428,203 +366,147 @@ const structuredData = {
 		</footer>
 
 		<script>
-			interface BrainPoint {
-				x: number;
-				y: number;
-				z: number;
-				nx: number;
-				ny: number;
-				nz: number;
-				sulcus: number;
-				type: 'cortex' | 'cerebellum' | 'brainstem' | 'tract';
-				energy: number;
+			interface LateralNode {
+				u: number;
+				v: number;
+				char: string;
+				type: 'gyrus' | 'sulcus' | 'edge' | 'cerebellum' | 'brainstem';
+				intensity: number;
 				phase: number;
+				baseX: number;
+				baseY: number;
+				currX: number;
+				currY: number;
+				targetX: number;
+				targetY: number;
+				vx: number;
+				vy: number;
+				energy: number;
 			}
 
 			interface SynapticPulse {
 				x: number;
 				y: number;
-				z: number;
 				time: number;
 				speed: number;
 				maxRadius: number;
 			}
 
-			function createBrainModel(): BrainPoint[] {
-				const points: BrainPoint[] = [];
+			function createLateralBrainNodes(): LateralNode[] {
+				const nodes: LateralNode[] = [];
+				const width = 94;
+				const height = 42;
 
-				// 1. CEREBRAL CORTEX (Hemispheres with lobes, central sulcus, sylvian fissure, gyri & sulci)
-				const hemiCount = 2600;
-				for (let i = 0; i < hemiCount; i++) {
-					const phi = Math.acos(1 - (2 * (i + 0.5)) / hemiCount);
-					const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+				const palette = [' ', '.', ':', '-', '=', '+', '*', '#', '%', '@'];
+				const cerebChars = ['-', '~', '=', '≡', '='];
 
-					const sx = Math.sin(phi) * Math.cos(theta);
-					const sy = Math.cos(phi); // +1 superior, -1 inferior
-					const sz = Math.sin(phi) * Math.sin(theta); // +1 anterior (frontal), -1 posterior (occipital)
+				for (let r = 0; r < height; r++) {
+					for (let c = 0; c < width; c++) {
+						const u = (c / (width - 1) - 0.5) * 2.3;
+						const v = (0.5 - r / (height - 1)) * 2.1;
 
-					const signX = sx >= 0 ? 1 : -1;
-					const absSx = Math.abs(sx);
+						const uCortex = u - 0.02;
+						const vCortex = v - 0.12;
+						const frontalTaper = u > 0 ? 1.0 - 0.08 * u : 1.0 + 0.12 * u;
+						const topDome = v > 0 ? 1.0 - 0.05 * v : 1.0;
 
-					// Anatomical cranial proportions
-					const frontal = sz > 0 ? 1 + 0.24 * sz * (1 - sy * sy * 0.65) : 1;
-					const occipital = sz < 0 ? 1 + 0.14 * sz : 1;
-					const dome = sy > 0 ? 1 + 0.2 * sy * (1 - absSx * 0.45) : 1;
+						const rOuter =
+							Math.pow(Math.abs(uCortex / (0.92 * frontalTaper)), 2.3) +
+							Math.pow(Math.abs(vCortex / (0.8 * topDome)), 2.3);
 
-					const rx = 0.86 * frontal * occipital;
-					const ry = 0.92 * dome;
-					const rz = 1.18 * frontal * occipital;
+						const cortexMask = rOuter <= 1.0;
+						const sylvianFissure =
+							v > -0.18 &&
+							v < 0.04 &&
+							u > -0.05 &&
+							u < 0.68 &&
+							Math.sin(((v + 0.18) / 0.22) * Math.PI) > 0.65 &&
+							u > 0.05 + (0.04 - v) * 2.0;
 
-					// 1. Temporal Lobe (antero-inferior projection)
-					let temporalLobe = 0;
-					if (sy < 0.05 && sy > -0.58 && sz > -0.28 && sz < 0.62) {
-						temporalLobe = Math.sin(((sy + 0.58) / 0.63) * Math.PI) * Math.sin(((sz + 0.28) / 0.9) * Math.PI) * 0.34;
-					}
+						const cerebellarCutout = u < 0.08 && v < -0.15 && (u < -0.12 || v < -0.28);
+						const inCortex = cortexMask && !sylvianFissure && !cerebellarCutout;
 
-					// 2. Sylvian Fissure (Lateral Sulcus indentation)
-					let sylvianFissure = 0;
-					if (sy > -0.26 && sy < 0.1 && sz > -0.22 && sz < 0.52 && absSx > 0.28) {
-						sylvianFissure = Math.sin(((sy + 0.26) / 0.36) * Math.PI) * 0.24;
-					}
+						const uCereb = (u + 0.42) / 0.36;
+						const vCereb = (v + 0.45) / 0.25;
+						const rCereb = uCereb * uCereb + vCereb * vCereb;
+						const inCerebellum = rCereb <= 1.0 && u < 0.02 && v < -0.16 && v > -0.74;
 
-					// 3. Central Sulcus (Rolandic Fissure)
-					let centralSulcus = 0;
-					const centralDist = Math.abs(sz - 0.65 * sy - 0.08);
-					if (centralDist < 0.16 && sy > -0.25 && absSx > 0.2) {
-						centralSulcus = Math.cos((centralDist / 0.16) * (Math.PI / 2)) * 0.14;
-					}
+						const inBrainstem =
+							u >= -0.15 &&
+							u <= 0.14 &&
+							v <= -0.25 &&
+							v >= -0.92 &&
+							u <= 0.1 + 0.08 * Math.exp(-Math.pow((v + 0.52) / 0.14, 2));
 
-					// 4. Longitudinal Fissure (midline cleft)
-					const longitudinalFissure = 0.14 * Math.exp(-Math.pow(absSx / 0.14, 2)) * (sy > -0.3 ? 1 : 0.35);
+						let type: 'gyrus' | 'sulcus' | 'edge' | 'cerebellum' | 'brainstem' | null = null;
+						let intensity = 0;
+						let char = ' ';
 
-					// 5. Serpentine Cortical Convolutions (Gyri & Sulci)
-					const wx = Math.sin(8.0 * sy + 5.5 * sz) * 0.28;
-					const wy = Math.cos(7.5 * absSx + 6.0 * sz) * 0.28;
-					const wz = Math.sin(7.0 * absSx + 7.5 * sy) * 0.28;
-					const pxWarp = absSx + wx;
-					const pyWarp = sy + wy;
-					const pzWarp = sz + wz;
+						if (inCortex) {
+							const w1 = Math.sin(7.5 * v + 4.5 * u) * 0.25;
+							const w2 = Math.cos(7.0 * u + 5.0 * v) * 0.25;
+							const uw = u + w1;
+							const vw = v + w2;
 
-					const fold1 = Math.sin(17.0 * pxWarp + 13.0 * pzWarp);
-					const fold2 = Math.cos(16.0 * pyWarp + 12.0 * pxWarp + Math.sin(14.0 * pzWarp) * 1.6);
-					const fold3 = Math.sin(21.0 * pxWarp - 16.0 * pyWarp) * 0.4;
-					const rawFold = fold1 * 0.52 + fold2 * 0.48 + fold3;
-					const sulcusDisplacement = Math.sign(rawFold) * Math.pow(Math.abs(rawFold), 0.72) * 0.11;
+							const centralDist = Math.abs(u - 0.55 * v - 0.12);
+							const isCentralSulcus = centralDist < 0.06 && v > -0.15;
 
-					const totalDisplacement = temporalLobe - sylvianFissure - centralSulcus + sulcusDisplacement;
+							const g1 = Math.sin(15.0 * uw + 11.0 * vw);
+							const g2 = Math.cos(14.0 * vw - 10.0 * uw + Math.sin(12.0 * uw) * 1.5);
+							const g3 = Math.sin(19.0 * uw - 15.0 * vw) * 0.4;
+							const gyriWave = g1 * 0.55 + g2 * 0.45 + g3;
 
-					const px = signX * (absSx * rx + 0.16 - longitudinalFissure) * (1 + totalDisplacement);
-					const py = (sy * ry + 0.18) * (1 + totalDisplacement);
-					const pz = (sz * rz + 0.08) * (1 + totalDisplacement);
+							const edge = rOuter > 0.88;
+							intensity = isCentralSulcus
+								? 0.15
+								: edge
+									? 0.85
+									: Math.max(0.1, Math.min(1.0, 0.5 + gyriWave * 0.45));
 
-					// Notch for cerebellum & brainstem base
-					if (py < -0.15 && pz < -0.32 && absSx < 0.8) continue;
-					if (py < -0.38 && absSx < 0.35 && pz > -0.35 && pz < 0.2) continue;
+							type = isCentralSulcus ? 'sulcus' : edge ? 'edge' : 'gyrus';
+							if (type === 'sulcus') {
+								char = '.';
+							} else {
+								const idx = Math.min(palette.length - 1, Math.floor(intensity * (palette.length - 1)) + 1);
+								char = palette[idx];
+							}
+						} else if (inCerebellum) {
+							const folia = (Math.sin(v * 45.0) + 1.0) * 0.5;
+							const edge = rCereb > 0.85;
+							intensity = edge ? 0.75 : 0.35 + folia * 0.45;
+							type = 'cerebellum';
+							const idx = Math.min(cerebChars.length - 1, Math.floor(intensity * cerebChars.length));
+							char = cerebChars[idx];
+						} else if (inBrainstem) {
+							const edge = u <= -0.13 || u >= 0.08;
+							intensity = edge ? 0.7 : 0.45;
+							type = 'brainstem';
+							char = intensity > 0.6 ? '|' : ':';
+						}
 
-					const foldGradX = Math.cos(17.0 * pxWarp) * 0.25;
-					const foldGradY = -Math.sin(16.0 * pyWarp) * 0.25;
-					const foldGradZ = Math.cos(13.0 * pzWarp) * 0.25;
-					const nx = sx * signX + foldGradX;
-					const ny = sy + foldGradY;
-					const nz = sz + foldGradZ;
-					const nLen = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
-
-					points.push({
-						x: px,
-						y: py,
-						z: pz,
-						nx: nx / nLen,
-						ny: ny / nLen,
-						nz: nz / nLen,
-						sulcus: rawFold,
-						type: 'cortex',
-						energy: 0,
-						phase: Math.random() * Math.PI * 2,
-					});
-				}
-
-				// 2. CEREBELLUM (Posterior-inferior base, folia striations)
-				const cerebCount = 700;
-				for (let i = 0; i < cerebCount; i++) {
-					const phi = Math.acos(1 - (2 * (i + 0.5)) / cerebCount);
-					const theta = Math.PI * (1 + Math.sqrt(5)) * i;
-
-					const sx = Math.sin(phi) * Math.cos(theta);
-					const sy = Math.cos(phi);
-					const sz = Math.sin(phi) * Math.sin(theta);
-
-					const signX = sx >= 0 ? 1 : -1;
-					const absSx = Math.abs(sx);
-					const folia = Math.sin(sy * 42) * 0.05;
-
-					const px = signX * (absSx * 0.65 + 0.09) * (1 + folia);
-					const py = (sy * 0.44 - 0.46) * (1 + folia);
-					const pz = (sz * 0.54 - 0.62) * (1 + folia);
-
-					points.push({
-						x: px,
-						y: py,
-						z: pz,
-						nx: sx * signX,
-						ny: sy,
-						nz: sz,
-						sulcus: folia * 8,
-						type: 'cerebellum',
-						energy: 0,
-						phase: Math.random() * Math.PI * 2,
-					});
-				}
-
-				// 3. BRAINSTEM (Pons and Medulla)
-				const stemCount = 300;
-				for (let i = 0; i < stemCount; i++) {
-					const t = i / stemCount;
-					const angle = ((i % 16) / 16) * Math.PI * 2;
-					const py = -0.28 - t * 0.68;
-
-					const ponsBulge = Math.exp(-Math.pow((py + 0.48) / 0.12, 2)) * 0.11;
-					const radius = (0.17 + ponsBulge) * (1 - t * 0.28);
-
-					const px = Math.cos(angle) * radius * 0.92;
-					const pz = Math.sin(angle) * radius + ponsBulge * 0.6 - 0.14;
-
-					points.push({
-						x: px,
-						y: py,
-						z: pz,
-						nx: Math.cos(angle),
-						ny: 0,
-						nz: Math.sin(angle),
-						sulcus: 0,
-						type: 'brainstem',
-						energy: 0,
-						phase: Math.random() * Math.PI * 2,
-					});
-				}
-
-				// 4. NEURAL TRACTS (Internal synaptic nodes)
-				const tractCount = 160;
-				for (let i = 0; i < tractCount; i++) {
-					const u = (Math.random() - 0.5) * 1.1;
-					const v = (Math.random() - 0.5) * 0.7;
-					const w = (Math.random() - 0.5) * 1.2;
-					if ((u * u) / 0.45 + (v * v) / 0.35 + (w * w) / 0.7 < 0.65) {
-						points.push({
-							x: u,
-							y: v + 0.1,
-							z: w,
-							nx: 0,
-							ny: 1,
-							nz: 0,
-							sulcus: 0.5,
-							type: 'tract',
-							energy: 0,
-							phase: Math.random() * Math.PI * 2,
-						});
+						if (type && char !== ' ') {
+							nodes.push({
+								u,
+								v,
+								char,
+								type,
+								intensity,
+								phase: Math.random() * Math.PI * 2,
+								baseX: 0,
+								baseY: 0,
+								currX: 0,
+								currY: 0,
+								targetX: 0,
+								targetY: 0,
+								vx: 0,
+								vy: 0,
+								energy: 0,
+							});
+						}
 					}
 				}
 
-				return points;
+				return nodes;
 			}
 
 			const canvas = document.getElementById('brain-canvas') as HTMLCanvasElement | null;
@@ -633,37 +515,19 @@ const structuredData = {
 
 			if (canvas && container) {
 				const ctx = canvas.getContext('2d');
-				const points = createBrainModel();
+				const nodes = createLateralBrainNodes();
 				const pulses: SynapticPulse[] = [];
 
 				let width = 0;
 				let height = 0;
 				let dpr = 1;
-				let cols = 64;
-				let rows = 32;
-				let charW = 10;
-				let charH = 18;
 				let fontSize = 12;
-
-				let baseRotY = 0.65;
-				let currentRotY = 0.65;
-				let targetRotY = 0.65;
-				let currentRotX = 0.2;
-				let targetRotX = 0.2;
-
-				let isDragging = false;
-				let lastDragX = 0;
-				let lastDragY = 0;
-				let dragVelocityX = 0;
-				let dragVelocityY = 0;
-
-				let pointerX = 0.5;
-				let pointerY = 0.5;
-				let isHovering = false;
 				let lastTime = performance.now();
 				let lastPulseSpawn = 0;
 
-				const palette = [' ', '.', ':', '-', '=', '+', '*', '#', '%', '@'];
+				let isHovering = false;
+				let pointerX = -9999;
+				let pointerY = -9999;
 
 				const resize = () => {
 					const rect = container.getBoundingClientRect();
@@ -678,267 +542,186 @@ const structuredData = {
 						ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 					}
 
-					fontSize = width < 480 ? 10.5 : width < 768 ? 12 : 13;
-					charH = Math.round(fontSize * 1.24);
+					fontSize = width < 480 ? 9.5 : width < 768 ? 11 : 12.5;
 
-					if (ctx) {
-						ctx.font = `${fontSize}px 'DM Mono', Consolas, monospace`;
-						charW = Math.max(6, ctx.measureText('M').width);
-					} else {
-						charW = fontSize * 0.62;
+					const originX = width >= 860 ? width * 0.58 : width * 0.5;
+					const originY = height * 0.48;
+					const brainScale = Math.min(width * 0.4, height * 0.46);
+
+					for (let i = 0; i < nodes.length; i++) {
+						const node = nodes[i];
+						node.baseX = originX + node.u * brainScale * 1.05;
+						node.baseY = originY - node.v * brainScale;
+						if (node.currX === 0 && node.currY === 0) {
+							node.currX = node.baseX;
+							node.currY = node.baseY;
+							node.targetX = node.baseX;
+							node.targetY = node.baseY;
+						}
 					}
-
-					cols = Math.max(24, Math.floor(width / charW));
-					rows = Math.max(16, Math.floor(height / charH));
 				};
 
 				const resizeObserver = new ResizeObserver(() => resize());
 				resizeObserver.observe(container);
 				resize();
 
-				const spawnPulse = (originX = 0, originY = 0, originZ = 0) => {
+				const spawnPulse = (originX: number, originY: number) => {
 					pulses.push({
 						x: originX,
 						y: originY,
-						z: originZ,
 						time: performance.now(),
-						speed: 1.8,
-						maxRadius: 1.4,
+						speed: 260, // px per second
+						maxRadius: Math.max(width, height) * 0.6,
 					});
 					if (pulses.length > 5) pulses.shift();
 				};
 
-				// Pointer interactions
+				// Mouse pointer interactions: morph & transition
 				const handlePointerMove = (event: PointerEvent) => {
 					const rect = container.getBoundingClientRect();
-					pointerX = Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
-					pointerY = Math.min(1, Math.max(0, (event.clientY - rect.top) / rect.height));
+					pointerX = event.clientX - rect.left;
+					pointerY = event.clientY - rect.top;
 					isHovering = true;
 
-					container.style.setProperty('--cursor-x', `${pointerX * 100}%`);
-					container.style.setProperty('--cursor-y', `${pointerY * 100}%`);
+					const relX = Math.min(1, Math.max(0, pointerX / rect.width));
+					const relY = Math.min(1, Math.max(0, pointerY / rect.height));
+					container.style.setProperty('--cursor-x', `${relX * 100}%`);
+					container.style.setProperty('--cursor-y', `${relY * 100}%`);
 
-					if (isDragging) {
-						const dx = event.clientX - lastDragX;
-						const dy = event.clientY - lastDragY;
-						dragVelocityX = dx * 0.007;
-						dragVelocityY = dy * 0.007;
-						targetRotY += dragVelocityX;
-						targetRotX = Math.max(-0.6, Math.min(0.8, targetRotX - dragVelocityY));
-						lastDragX = event.clientX;
-						lastDragY = event.clientY;
-					} else {
-						targetRotY = baseRotY + (pointerX - 0.5) * 0.85;
-						targetRotX = 0.2 + (pointerY - 0.5) * 0.55;
+					// Apply fluid morphing to nearby nodes
+					const influenceRadius = Math.min(240, width * 0.28);
+					for (let i = 0; i < nodes.length; i++) {
+						const node = nodes[i];
+						const dx = pointerX - node.baseX;
+						const dy = pointerY - node.baseY;
+						const dist = Math.hypot(dx, dy);
 
-						if (Math.random() < 0.06) {
-							spawnPulse((pointerX - 0.5) * 1.5, -(pointerY - 0.5) * 1.2, 0.4);
+						if (dist < influenceRadius) {
+							const t = 1 - dist / influenceRadius;
+							const force = t * t * 24;
+							const swirl = Math.sin(t * Math.PI * 3.0 + node.phase) * (t * 6);
+							const swirlY = Math.cos(t * Math.PI * 3.0 + node.phase) * (t * 5);
+
+							node.targetX = node.baseX - (dx / (dist + 1)) * force + swirl;
+							node.targetY = node.baseY - (dy / (dist + 1)) * force * 0.65 + swirlY;
+							node.energy = Math.max(node.energy, t * 1.25);
 						}
 					}
-				};
 
-				container.addEventListener('pointerdown', (event) => {
-					isDragging = true;
-					lastDragX = event.clientX;
-					lastDragY = event.clientY;
-					dragVelocityX = 0;
-					dragVelocityY = 0;
-					spawnPulse((pointerX - 0.5) * 1.6, -(pointerY - 0.5) * 1.2, 0.5);
-					container.setPointerCapture(event.pointerId);
-				});
+					if (Math.random() < 0.05) {
+						spawnPulse(pointerX, pointerY);
+					}
+				};
 
 				container.addEventListener('pointermove', handlePointerMove);
 
-				const handlePointerEnd = (event: PointerEvent) => {
-					if (isDragging) {
-						isDragging = false;
-						try {
-							container.releasePointerCapture(event.pointerId);
-						} catch {}
-					}
-				};
+				container.addEventListener('pointerdown', (event) => {
+					const rect = container.getBoundingClientRect();
+					const clickX = event.clientX - rect.left;
+					const clickY = event.clientY - rect.top;
+					spawnPulse(clickX, clickY);
 
-				container.addEventListener('pointerup', handlePointerEnd);
-				container.addEventListener('pointercancel', handlePointerEnd);
+					// Shockwave morph
+					for (let i = 0; i < nodes.length; i++) {
+						const node = nodes[i];
+						const dx = clickX - node.baseX;
+						const dy = clickY - node.baseY;
+						const dist = Math.hypot(dx, dy);
+						if (dist < 260) {
+							const t = 1 - dist / 260;
+							node.targetX = node.baseX - (dx / (dist + 1)) * (t * 32);
+							node.targetY = node.baseY - (dy / (dist + 1)) * (t * 22);
+							node.energy = 1.0;
+						}
+					}
+				});
 
 				container.addEventListener('pointerleave', () => {
 					isHovering = false;
-					if (!isDragging) {
-						targetRotX = 0.2;
-					}
+					pointerX = -9999;
+					pointerY = -9999;
 				});
 
 				// Main Animation Loop
 				const render = (now: number) => {
-					const dt = Math.min((now - lastTime) / 1000, 0.1);
 					lastTime = now;
 
-					if (!isDragging && !prefersReducedMotion) {
-						baseRotY += dt * 0.2;
-						if (!isHovering) {
-							targetRotY = baseRotY;
-							targetRotX = 0.18 + Math.sin(now * 0.0012) * 0.06;
-						}
-					}
-
-					// Apply drag inertia
-					if (!isDragging && Math.abs(dragVelocityX) > 0.0001) {
-						baseRotY += dragVelocityX;
-						targetRotY += dragVelocityX;
-						dragVelocityX *= 0.92;
-					}
-					if (!isDragging && Math.abs(dragVelocityY) > 0.0001) {
-						targetRotX = Math.max(-0.6, Math.min(0.8, targetRotX - dragVelocityY));
-						dragVelocityY *= 0.92;
-					}
-
-					// Smooth rotation easing
-					currentRotY += (targetRotY - currentRotY) * 0.09;
-					currentRotX += (targetRotX - currentRotX) * 0.09;
-
-					// Spontaneous synaptic firing
-					if (now - lastPulseSpawn > 2600) {
+					// Spontaneous pulse
+					if (now - lastPulseSpawn > 3200 && !prefersReducedMotion) {
 						lastPulseSpawn = now;
-						const randPt = points[Math.floor(Math.random() * points.length)];
-						spawnPulse(randPt.x, randPt.y, randPt.z);
+						const randNode = nodes[Math.floor(Math.random() * nodes.length)];
+						if (randNode) spawnPulse(randNode.baseX, randNode.baseY);
 					}
 
 					if (ctx) {
 						ctx.clearRect(0, 0, width, height);
-
-						// 2D frame buffers
-						const charBuffer: string[][] = Array.from({ length: rows }, () => Array(cols).fill(' '));
-						const colorBuffer: string[][] = Array.from({ length: rows }, () => Array(cols).fill(''));
-						const glowBuffer: boolean[][] = Array.from({ length: rows }, () => Array(cols).fill(false));
-						const zBuffer: number[][] = Array.from({ length: rows }, () => Array(cols).fill(-999));
-
-						const cosY = Math.cos(currentRotY);
-						const sinY = Math.sin(currentRotY);
-						const cosX = Math.cos(currentRotX);
-						const sinX = Math.sin(currentRotX);
-
-						// Light vector
-						const nlx = 0.42,
-							nly = 0.62,
-							nlz = 0.66;
-
-						// Project and shade points
-						for (let i = 0; i < points.length; i++) {
-							const pt = points[i];
-
-							// 3D rotation
-							const x1 = pt.x * cosY + pt.z * sinY;
-							const y1 = pt.y;
-							const z1 = -pt.x * sinY + pt.z * cosY;
-
-							const x2 = x1;
-							const y2 = y1 * cosX - z1 * sinX;
-							const z2 = y1 * sinX + z1 * cosX;
-
-							// Rotate normals
-							const nx1 = pt.nx * cosY + pt.nz * sinY;
-							const ny1 = pt.ny;
-							const nz1 = -pt.nx * sinY + pt.nz * cosY;
-
-							const nx2 = nx1;
-							const ny2 = ny1 * cosX - nz1 * sinX;
-							const nz2 = ny1 * sinX + nz1 * cosX;
-
-							// Perspective projection
-							const camDist = 3.2;
-							const scale = Math.min(width * 0.72, height * 1.05) * 0.98;
-							const factor = scale / (camDist + z2);
-
-							const centerCol = width >= 860 ? Math.floor(cols * 0.58) : Math.floor(cols * 0.5);
-							const centerRow = Math.floor(rows * 0.48);
-
-							const col = Math.floor(centerCol + (x2 * factor * 1.95) / charW);
-							const row = Math.floor(centerRow - (y2 * factor) / charH);
-
-							if (col >= 0 && col < cols && row >= 0 && row < rows) {
-								if (z2 > zBuffer[row][col]) {
-									zBuffer[row][col] = z2;
-
-									// Pulse energy computation
-									let pulseEnergy = 0;
-									for (let p = 0; p < pulses.length; p++) {
-										const pulse = pulses[p];
-										const age = (now - pulse.time) / 1000;
-										const currentRadius = age * pulse.speed;
-										if (currentRadius < pulse.maxRadius) {
-											const dx = pt.x - pulse.x;
-											const dy = pt.y - pulse.y;
-											const dz = pt.z - pulse.z;
-											const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-											const waveDist = Math.abs(dist - currentRadius);
-											if (waveDist < 0.22) {
-												const intensity = (1 - waveDist / 0.22) * Math.max(0, 1 - currentRadius / pulse.maxRadius);
-												pulseEnergy = Math.max(pulseEnergy, intensity);
-											}
-										}
-									}
-
-									const dot = Math.max(0, nx2 * nlx + ny2 * nly + nz2 * nlz);
-									const depth = (z2 + 1.5) / 3.0;
-									const gyriBoost = pt.sulcus * 0.24;
-									const breathe = Math.sin(now * 0.002 + pt.phase) * 0.06;
-									const totalIntensity = Math.min(1, Math.max(0, dot * 0.46 + depth * 0.35 + gyriBoost + breathe + 0.12 + pulseEnergy * 0.7));
-
-									let charIndex = Math.floor(totalIntensity * (palette.length - 1));
-									let char = palette[charIndex];
-
-									if (pulseEnergy > 0.45) {
-										char = pulseEnergy > 0.75 ? '@' : '*';
-										colorBuffer[row][col] = '#ffffff';
-										glowBuffer[row][col] = true;
-									} else if (pt.type === 'cerebellum') {
-										char = totalIntensity > 0.6 ? '=' : totalIntensity > 0.35 ? '~' : '-';
-										colorBuffer[row][col] = `rgba(131, 246, 212, ${0.28 + depth * 0.3})`;
-									} else if (pt.type === 'brainstem') {
-										char = totalIntensity > 0.5 ? '|' : ':';
-										colorBuffer[row][col] = `rgba(131, 246, 212, ${0.25 + depth * 0.28})`;
-									} else {
-										// Cortical gyri crests vs sulci valleys
-										if (pt.sulcus > 0.35 && totalIntensity > 0.65) {
-											char = totalIntensity > 0.85 ? '@' : totalIntensity > 0.75 ? '%' : '#';
-											colorBuffer[row][col] = 'rgba(202, 255, 239, 0.88)';
-											glowBuffer[row][col] = true;
-										} else if (pt.sulcus < -0.2) {
-											char = totalIntensity > 0.35 ? ':' : '.';
-											colorBuffer[row][col] = `rgba(50, 95, 80, ${0.14 + depth * 0.22})`;
-										} else if (totalIntensity > 0.48) {
-											char = totalIntensity > 0.65 ? '*' : '+';
-											colorBuffer[row][col] = `rgba(131, 246, 212, ${0.38 + depth * 0.36})`;
-										} else {
-											char = totalIntensity > 0.25 ? '-' : ':';
-											colorBuffer[row][col] = `rgba(60, 110, 92, ${0.18 + depth * 0.22})`;
-										}
-									}
-
-									charBuffer[row][col] = char;
-								}
-							}
-						}
-
-						// Draw to canvas
 						ctx.font = `${fontSize}px 'DM Mono', Consolas, monospace`;
-						ctx.textBaseline = 'top';
+						ctx.textBaseline = 'middle';
+						ctx.textAlign = 'center';
 
-						for (let r = 0; r < rows; r++) {
-							const y = r * charH;
-							for (let c = 0; c < cols; c++) {
-								const char = charBuffer[r][c];
-								if (char !== ' ') {
-									ctx.fillStyle = colorBuffer[r][c] || '#83f6d4';
-									if (glowBuffer[r][c]) {
-										ctx.shadowColor = '#83f6d4';
-										ctx.shadowBlur = 8;
-									} else {
-										ctx.shadowBlur = 0;
+						// Update spring return physics & pulse excitations
+						for (let i = 0; i < nodes.length; i++) {
+							const node = nodes[i];
+
+							// If not actively displaced by pointer, relax target back to base rest position
+							if (!isHovering || Math.hypot(pointerX - node.baseX, pointerY - node.baseY) >= 240) {
+								node.targetX += (node.baseX - node.targetX) * 0.12;
+								node.targetY += (node.baseY - node.targetY) * 0.12;
+							}
+
+							// Spring physics interpolation
+							node.vx = (node.vx + (node.targetX - node.currX) * 0.14) * 0.78;
+							node.vy = (node.vy + (node.targetY - node.currY) * 0.14) * 0.78;
+							node.currX += node.vx;
+							node.currY += node.vy;
+
+							// Pulse wave excitation
+							for (let p = 0; p < pulses.length; p++) {
+								const pulse = pulses[p];
+								const age = (now - pulse.time) / 1000;
+								const currentRadius = age * pulse.speed;
+								if (currentRadius < pulse.maxRadius) {
+									const dist = Math.hypot(node.baseX - pulse.x, node.baseY - pulse.y);
+									const waveDist = Math.abs(dist - currentRadius);
+									if (waveDist < 26) {
+										const pulseStrength = (1 - waveDist / 26) * Math.max(0, 1 - currentRadius / pulse.maxRadius);
+										node.energy = Math.max(node.energy, pulseStrength);
 									}
-									ctx.fillText(char, c * charW, y);
 								}
 							}
+
+							// Energy decay
+							node.energy *= 0.94;
+
+							// Subtle breathing wave
+							const breathe = Math.sin(now * 0.002 + node.phase) * 0.6;
+							const drawY = node.currY + breathe;
+							const drawX = node.currX;
+
+							// Color & Glow rendering
+							if (node.energy > 0.45) {
+								ctx.fillStyle = '#ffffff';
+								ctx.shadowColor = '#83f6d4';
+								ctx.shadowBlur = 10;
+							} else if (node.type === 'edge' || (node.type === 'gyrus' && node.intensity > 0.7)) {
+								ctx.fillStyle = 'rgba(202, 255, 239, 0.88)';
+								ctx.shadowColor = '#83f6d4';
+								ctx.shadowBlur = 4;
+							} else if (node.type === 'cerebellum') {
+								ctx.fillStyle = `rgba(131, 246, 212, ${0.35 + node.energy * 0.4})`;
+								ctx.shadowBlur = 0;
+							} else if (node.type === 'brainstem') {
+								ctx.fillStyle = `rgba(131, 246, 212, ${0.32 + node.energy * 0.4})`;
+								ctx.shadowBlur = 0;
+							} else if (node.type === 'sulcus') {
+								ctx.fillStyle = 'rgba(60, 110, 92, 0.22)';
+								ctx.shadowBlur = 0;
+							} else {
+								ctx.fillStyle = `rgba(131, 246, 212, ${0.45 + node.intensity * 0.35 + node.energy * 0.4})`;
+								ctx.shadowBlur = 0;
+							}
+
+							ctx.fillText(node.char, drawX, drawY);
 						}
 					}
 
