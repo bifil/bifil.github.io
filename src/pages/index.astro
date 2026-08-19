@@ -52,9 +52,9 @@ const selectedWork = [
 	},
 ];
 
-function generateAnatomicalBrain(rotX = 0.2, rotY = 0.65, width = 78, height = 36) {
-	const points: Array<{ x: number; y: number; z: number; nx: number; ny: number; nz: number; type: string }> = [];
-	const hemiCount = 1400;
+function generateAnatomicalBrain(rotX = 0.2, rotY = 0.65, width = 84, height = 36) {
+	const points: Array<{ x: number; y: number; z: number; nx: number; ny: number; nz: number; sulcus: number; type: string }> = [];
+	const hemiCount = 2000;
 	for (let i = 0; i < hemiCount; i++) {
 		const phi = Math.acos(1 - (2 * (i + 0.5)) / hemiCount);
 		const theta = Math.PI * (1 + Math.sqrt(5)) * i;
@@ -63,32 +63,80 @@ function generateAnatomicalBrain(rotX = 0.2, rotY = 0.65, width = 78, height = 3
 		const sz = Math.sin(phi) * Math.sin(theta);
 		const signX = sx >= 0 ? 1 : -1;
 		const absSx = Math.abs(sx);
-		const frontal = sz > 0 ? 1 + 0.22 * sz * (1 - sy * sy * 0.7) : 1;
-		const occipital = sz < 0 ? 1 + 0.12 * sz : 1;
-		const dome = sy > 0 ? 1 + 0.18 * sy * (1 - absSx * 0.4) : 1;
-		const rx = 0.85 * frontal * occipital;
-		const ry = 0.9 * dome;
-		const rz = 1.15 * frontal * occipital;
+
+		// Anatomical cranial proportions
+		const frontal = sz > 0 ? 1 + 0.24 * sz * (1 - sy * sy * 0.65) : 1;
+		const occipital = sz < 0 ? 1 + 0.14 * sz : 1;
+		const dome = sy > 0 ? 1 + 0.2 * sy * (1 - absSx * 0.45) : 1;
+		const rx = 0.86 * frontal * occipital;
+		const ry = 0.92 * dome;
+		const rz = 1.18 * frontal * occipital;
+
+		// 1. Temporal Lobe
 		let temporalLobe = 0;
-		if (sy < 0.0 && sy > -0.55 && sz > -0.25 && sz < 0.6) {
-			temporalLobe = Math.sin(((sy + 0.55) / 0.55) * Math.PI) * Math.sin(((sz + 0.25) / 0.85) * Math.PI) * 0.32;
+		if (sy < 0.05 && sy > -0.58 && sz > -0.28 && sz < 0.62) {
+			temporalLobe = Math.sin(((sy + 0.58) / 0.63) * Math.PI) * Math.sin(((sz + 0.28) / 0.9) * Math.PI) * 0.34;
 		}
+
+		// 2. Sylvian Fissure (Lateral Sulcus)
 		let sylvianFissure = 0;
-		if (sy > -0.25 && sy < 0.08 && sz > -0.2 && sz < 0.5 && absSx > 0.3) {
-			sylvianFissure = Math.sin(((sy + 0.25) / 0.33) * Math.PI) * 0.22;
+		if (sy > -0.26 && sy < 0.1 && sz > -0.22 && sz < 0.52 && absSx > 0.28) {
+			sylvianFissure = Math.sin(((sy + 0.26) / 0.36) * Math.PI) * 0.24;
 		}
-		const fissure = 0.12 * Math.exp(-Math.pow(absSx / 0.15, 2)) * (sy > -0.3 ? 1 : 0.3);
-		const fold1 = Math.sin(absSx * 13 + sz * 9 + Math.sin(sy * 11) * 1.5);
-		const fold2 = Math.cos(sy * 15 + Math.cos(sz * 11 + absSx * 7) * 1.4);
-		const gyri = (fold1 * 0.5 + fold2 * 0.5) * 0.08;
-		const px = signX * (absSx * rx + 0.16 - fissure) * (1 + temporalLobe - sylvianFissure + gyri);
-		const py = (sy * ry + 0.18) * (1 + temporalLobe - sylvianFissure + gyri);
-		const pz = (sz * rz + 0.08) * (1 + temporalLobe - sylvianFissure + gyri);
+
+		// 3. Central Sulcus (Rolandic Fissure)
+		let centralSulcus = 0;
+		const centralDist = Math.abs(sz - 0.65 * sy - 0.08);
+		if (centralDist < 0.16 && sy > -0.25 && absSx > 0.2) {
+			centralSulcus = Math.cos((centralDist / 0.16) * (Math.PI / 2)) * 0.14;
+		}
+
+		// 4. Longitudinal Fissure
+		const longitudinalFissure = 0.14 * Math.exp(-Math.pow(absSx / 0.14, 2)) * (sy > -0.3 ? 1 : 0.35);
+
+		// 5. Serpentine Cortical Convolutions (Gyri & Sulci)
+		const wx = Math.sin(8.0 * sy + 5.5 * sz) * 0.28;
+		const wy = Math.cos(7.5 * absSx + 6.0 * sz) * 0.28;
+		const wz = Math.sin(7.0 * absSx + 7.5 * sy) * 0.28;
+		const pxWarp = absSx + wx;
+		const pyWarp = sy + wy;
+		const pzWarp = sz + wz;
+
+		const fold1 = Math.sin(17.0 * pxWarp + 13.0 * pzWarp);
+		const fold2 = Math.cos(16.0 * pyWarp + 12.0 * pxWarp + Math.sin(14.0 * pzWarp) * 1.6);
+		const fold3 = Math.sin(21.0 * pxWarp - 16.0 * pyWarp) * 0.4;
+		const rawFold = fold1 * 0.52 + fold2 * 0.48 + fold3;
+		const sulcusDisplacement = Math.sign(rawFold) * Math.pow(Math.abs(rawFold), 0.72) * 0.11;
+
+		const totalDisplacement = temporalLobe - sylvianFissure - centralSulcus + sulcusDisplacement;
+		const px = signX * (absSx * rx + 0.16 - longitudinalFissure) * (1 + totalDisplacement);
+		const py = (sy * ry + 0.18) * (1 + totalDisplacement);
+		const pz = (sz * rz + 0.08) * (1 + totalDisplacement);
+
 		if (py < -0.15 && pz < -0.32 && absSx < 0.8) continue;
 		if (py < -0.38 && absSx < 0.35 && pz > -0.35 && pz < 0.2) continue;
-		points.push({ x: px, y: py, z: pz, nx: sx * signX, ny: sy, nz: sz, type: 'cortex' });
+
+		const foldGradX = Math.cos(17.0 * pxWarp) * 0.25;
+		const foldGradY = -Math.sin(16.0 * pyWarp) * 0.25;
+		const foldGradZ = Math.cos(13.0 * pzWarp) * 0.25;
+		const nx = sx * signX + foldGradX;
+		const ny = sy + foldGradY;
+		const nz = sz + foldGradZ;
+		const nLen = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+
+		points.push({
+			x: px,
+			y: py,
+			z: pz,
+			nx: nx / nLen,
+			ny: ny / nLen,
+			nz: nz / nLen,
+			sulcus: rawFold,
+			type: 'cortex',
+		});
 	}
-	const cerebCount = 500;
+
+	const cerebCount = 550;
 	for (let i = 0; i < cerebCount; i++) {
 		const phi = Math.acos(1 - (2 * (i + 0.5)) / cerebCount);
 		const theta = Math.PI * (1 + Math.sqrt(5)) * i;
@@ -97,23 +145,43 @@ function generateAnatomicalBrain(rotX = 0.2, rotY = 0.65, width = 78, height = 3
 		const sz = Math.sin(phi) * Math.sin(theta);
 		const signX = sx >= 0 ? 1 : -1;
 		const absSx = Math.abs(sx);
-		const folia = Math.sin(sy * 36) * 0.04;
+		const folia = Math.sin(sy * 40) * 0.045;
 		const px = signX * (absSx * 0.65 + 0.09) * (1 + folia);
 		const py = (sy * 0.44 - 0.46) * (1 + folia);
 		const pz = (sz * 0.54 - 0.62) * (1 + folia);
-		points.push({ x: px, y: py, z: pz, nx: sx * signX, ny: sy, nz: sz, type: 'cerebellum' });
+		points.push({
+			x: px,
+			y: py,
+			z: pz,
+			nx: sx * signX,
+			ny: sy,
+			nz: sz,
+			sulcus: folia * 8,
+			type: 'cerebellum',
+		});
 	}
-	const stemCount = 200;
+
+	const stemCount = 220;
 	for (let i = 0; i < stemCount; i++) {
 		const t = i / stemCount;
 		const angle = ((i % 16) / 16) * Math.PI * 2;
 		const py = -0.28 - t * 0.68;
-		const ponsBulge = Math.exp(-Math.pow((py + 0.48) / 0.12, 2)) * 0.1;
+		const ponsBulge = Math.exp(-Math.pow((py + 0.48) / 0.12, 2)) * 0.11;
 		const radius = (0.17 + ponsBulge) * (1 - t * 0.28);
 		const px = Math.cos(angle) * radius * 0.92;
 		const pz = Math.sin(angle) * radius + ponsBulge * 0.6 - 0.14;
-		points.push({ x: px, y: py, z: pz, nx: Math.cos(angle), ny: 0, nz: Math.sin(angle), type: 'brainstem' });
+		points.push({
+			x: px,
+			y: py,
+			z: pz,
+			nx: Math.cos(angle),
+			ny: 0,
+			nz: Math.sin(angle),
+			sulcus: 0,
+			type: 'brainstem',
+		});
 	}
+
 	const grid = Array.from({ length: height }, () => Array(width).fill(' '));
 	const zbuf = Array.from({ length: height }, () => Array(width).fill(-999));
 	const palette = [' ', '.', ':', '-', '=', '+', '*', '#', '%', '@'];
@@ -138,19 +206,20 @@ function generateAnatomicalBrain(rotX = 0.2, rotY = 0.65, width = 78, height = 3
 		const ny2 = ny1 * cosX - nz1 * sinX;
 		const nz2 = ny1 * sinX + nz1 * cosX;
 		const factor = 46 / (3.0 + z2);
-		const px = Math.floor(width / 2 + x2 * factor * 2.0);
+		const px = Math.floor(width * 0.58 + x2 * factor * 2.0);
 		const py = Math.floor(height / 2 - y2 * factor);
 		if (px >= 0 && px < width && py >= 0 && py < height && z2 > zbuf[py][px]) {
 			zbuf[py][px] = z2;
 			const dot = Math.max(0, nx2 * nlx + ny2 * nly + nz2 * nlz);
-			const intensity = Math.min(1, Math.max(0, dot * 0.6 + ((z2 + 1.5) / 3.0) * 0.45));
+			const gyriBoost = pt.sulcus * 0.22;
+			const intensity = Math.min(1, Math.max(0, dot * 0.48 + ((z2 + 1.5) / 3.0) * 0.35 + gyriBoost + 0.15));
 			grid[py][px] = palette[Math.floor(intensity * (palette.length - 1))];
 		}
 	}
 	return grid.map((r) => r.join('')).join('\n');
 }
 
-const fallbackAscii = generateAnatomicalBrain(0.2, 0.65, 78, 36);
+const fallbackAscii = generateAnatomicalBrain(0.2, 0.65, 84, 36);
 
 const structuredData = {
 	'@context': 'https://schema.org',
@@ -249,12 +318,7 @@ const structuredData = {
 				</div>
 
 				<div class="shell hero-foot">
-					<p>Robotics & Mechatronics Engineering · DGIST</p>
-					<div class="hero-stats" aria-label="Research track record">
-						<span><strong>28</strong> journal articles</span>
-						<span><strong>6</strong> patents</span>
-						<span><strong>3</strong> PI-led programs</span>
-					</div>
+					<p>Department of Robotics & Mechatronics Engineering</p>
 				</div>
 			</section>
 
@@ -371,6 +435,7 @@ const structuredData = {
 				nx: number;
 				ny: number;
 				nz: number;
+				sulcus: number;
 				type: 'cortex' | 'cerebellum' | 'brainstem' | 'tract';
 				energy: number;
 				phase: number;
@@ -388,8 +453,8 @@ const structuredData = {
 			function createBrainModel(): BrainPoint[] {
 				const points: BrainPoint[] = [];
 
-				// 1. CEREBRAL CORTEX (Hemispheres with lobes & sulci)
-				const hemiCount = 2000;
+				// 1. CEREBRAL CORTEX (Hemispheres with lobes, central sulcus, sylvian fissure, gyri & sulci)
+				const hemiCount = 2600;
 				for (let i = 0; i < hemiCount; i++) {
 					const phi = Math.acos(1 - (2 * (i + 0.5)) / hemiCount);
 					const theta = Math.PI * (1 + Math.sqrt(5)) * i;
@@ -401,53 +466,77 @@ const structuredData = {
 					const signX = sx >= 0 ? 1 : -1;
 					const absSx = Math.abs(sx);
 
-					// Frontal lobe expansion (anterior: sz > 0)
-					const frontal = sz > 0 ? 1 + 0.22 * sz * (1 - sy * sy * 0.7) : 1;
-					// Occipital lobe taper (posterior: sz < 0)
-					const occipital = sz < 0 ? 1 + 0.12 * sz : 1;
-					// Sagittal superior dome (sy > 0)
-					const dome = sy > 0 ? 1 + 0.18 * sy * (1 - absSx * 0.4) : 1;
+					// Anatomical cranial proportions
+					const frontal = sz > 0 ? 1 + 0.24 * sz * (1 - sy * sy * 0.65) : 1;
+					const occipital = sz < 0 ? 1 + 0.14 * sz : 1;
+					const dome = sy > 0 ? 1 + 0.2 * sy * (1 - absSx * 0.45) : 1;
 
-					const rx = 0.85 * frontal * occipital;
-					const ry = 0.9 * dome;
-					const rz = 1.15 * frontal * occipital;
+					const rx = 0.86 * frontal * occipital;
+					const ry = 0.92 * dome;
+					const rz = 1.18 * frontal * occipital;
 
-					// Temporal lobe hook: extends antero-inferiorly
+					// 1. Temporal Lobe (antero-inferior projection)
 					let temporalLobe = 0;
-					if (sy < 0.0 && sy > -0.55 && sz > -0.25 && sz < 0.6) {
-						temporalLobe = Math.sin(((sy + 0.55) / 0.55) * Math.PI) * Math.sin(((sz + 0.25) / 0.85) * Math.PI) * 0.32;
+					if (sy < 0.05 && sy > -0.58 && sz > -0.28 && sz < 0.62) {
+						temporalLobe = Math.sin(((sy + 0.58) / 0.63) * Math.PI) * Math.sin(((sz + 0.28) / 0.9) * Math.PI) * 0.34;
 					}
 
-					// Sylvian fissure (lateral sulcus indentation)
+					// 2. Sylvian Fissure (Lateral Sulcus indentation)
 					let sylvianFissure = 0;
-					if (sy > -0.25 && sy < 0.08 && sz > -0.2 && sz < 0.5 && absSx > 0.3) {
-						sylvianFissure = Math.sin(((sy + 0.25) / 0.33) * Math.PI) * 0.22;
+					if (sy > -0.26 && sy < 0.1 && sz > -0.22 && sz < 0.52 && absSx > 0.28) {
+						sylvianFissure = Math.sin(((sy + 0.26) / 0.36) * Math.PI) * 0.24;
 					}
 
-					// Longitudinal fissure (groove between hemispheres at sx = 0)
-					const fissure = 0.12 * Math.exp(-Math.pow(absSx / 0.15, 2)) * (sy > -0.3 ? 1 : 0.3);
+					// 3. Central Sulcus (Rolandic Fissure)
+					let centralSulcus = 0;
+					const centralDist = Math.abs(sz - 0.65 * sy - 0.08);
+					if (centralDist < 0.16 && sy > -0.25 && absSx > 0.2) {
+						centralSulcus = Math.cos((centralDist / 0.16) * (Math.PI / 2)) * 0.14;
+					}
 
-					// Cortical Gyri & Sulci (multi-frequency organic convolutions)
-					const fold1 = Math.sin(absSx * 13 + sz * 9 + Math.sin(sy * 11) * 1.5);
-					const fold2 = Math.cos(sy * 15 + Math.cos(sz * 11 + absSx * 7) * 1.4);
-					const fold3 = Math.sin(sz * 16 - sy * 9);
-					const gyri = (fold1 * 0.4 + fold2 * 0.4 + fold3 * 0.2) * 0.08;
+					// 4. Longitudinal Fissure (midline cleft)
+					const longitudinalFissure = 0.14 * Math.exp(-Math.pow(absSx / 0.14, 2)) * (sy > -0.3 ? 1 : 0.35);
 
-					const px = signX * (absSx * rx + 0.16 - fissure) * (1 + temporalLobe - sylvianFissure + gyri);
-					const py = (sy * ry + 0.18) * (1 + temporalLobe - sylvianFissure + gyri);
-					const pz = (sz * rz + 0.08) * (1 + temporalLobe - sylvianFissure + gyri);
+					// 5. Serpentine Cortical Convolutions (Gyri & Sulci)
+					const wx = Math.sin(8.0 * sy + 5.5 * sz) * 0.28;
+					const wy = Math.cos(7.5 * absSx + 6.0 * sz) * 0.28;
+					const wz = Math.sin(7.0 * absSx + 7.5 * sy) * 0.28;
+					const pxWarp = absSx + wx;
+					const pyWarp = sy + wy;
+					const pzWarp = sz + wz;
+
+					const fold1 = Math.sin(17.0 * pxWarp + 13.0 * pzWarp);
+					const fold2 = Math.cos(16.0 * pyWarp + 12.0 * pxWarp + Math.sin(14.0 * pzWarp) * 1.6);
+					const fold3 = Math.sin(21.0 * pxWarp - 16.0 * pyWarp) * 0.4;
+					const rawFold = fold1 * 0.52 + fold2 * 0.48 + fold3;
+					const sulcusDisplacement = Math.sign(rawFold) * Math.pow(Math.abs(rawFold), 0.72) * 0.11;
+
+					const totalDisplacement = temporalLobe - sylvianFissure - centralSulcus + sulcusDisplacement;
+
+					const px = signX * (absSx * rx + 0.16 - longitudinalFissure) * (1 + totalDisplacement);
+					const py = (sy * ry + 0.18) * (1 + totalDisplacement);
+					const pz = (sz * rz + 0.08) * (1 + totalDisplacement);
 
 					// Notch for cerebellum & brainstem base
 					if (py < -0.15 && pz < -0.32 && absSx < 0.8) continue;
 					if (py < -0.38 && absSx < 0.35 && pz > -0.35 && pz < 0.2) continue;
 
+					const foldGradX = Math.cos(17.0 * pxWarp) * 0.25;
+					const foldGradY = -Math.sin(16.0 * pyWarp) * 0.25;
+					const foldGradZ = Math.cos(13.0 * pzWarp) * 0.25;
+					const nx = sx * signX + foldGradX;
+					const ny = sy + foldGradY;
+					const nz = sz + foldGradZ;
+					const nLen = Math.sqrt(nx * nx + ny * ny + nz * nz) || 1;
+
 					points.push({
 						x: px,
 						y: py,
 						z: pz,
-						nx: sx * signX,
-						ny: sy,
-						nz: sz,
+						nx: nx / nLen,
+						ny: ny / nLen,
+						nz: nz / nLen,
+						sulcus: rawFold,
 						type: 'cortex',
 						energy: 0,
 						phase: Math.random() * Math.PI * 2,
@@ -455,7 +544,7 @@ const structuredData = {
 				}
 
 				// 2. CEREBELLUM (Posterior-inferior base, folia striations)
-				const cerebCount = 650;
+				const cerebCount = 700;
 				for (let i = 0; i < cerebCount; i++) {
 					const phi = Math.acos(1 - (2 * (i + 0.5)) / cerebCount);
 					const theta = Math.PI * (1 + Math.sqrt(5)) * i;
@@ -466,7 +555,7 @@ const structuredData = {
 
 					const signX = sx >= 0 ? 1 : -1;
 					const absSx = Math.abs(sx);
-					const folia = Math.sin(sy * 36) * 0.04;
+					const folia = Math.sin(sy * 42) * 0.05;
 
 					const px = signX * (absSx * 0.65 + 0.09) * (1 + folia);
 					const py = (sy * 0.44 - 0.46) * (1 + folia);
@@ -479,6 +568,7 @@ const structuredData = {
 						nx: sx * signX,
 						ny: sy,
 						nz: sz,
+						sulcus: folia * 8,
 						type: 'cerebellum',
 						energy: 0,
 						phase: Math.random() * Math.PI * 2,
@@ -486,13 +576,13 @@ const structuredData = {
 				}
 
 				// 3. BRAINSTEM (Pons and Medulla)
-				const stemCount = 280;
+				const stemCount = 300;
 				for (let i = 0; i < stemCount; i++) {
 					const t = i / stemCount;
 					const angle = ((i % 16) / 16) * Math.PI * 2;
 					const py = -0.28 - t * 0.68;
 
-					const ponsBulge = Math.exp(-Math.pow((py + 0.48) / 0.12, 2)) * 0.1;
+					const ponsBulge = Math.exp(-Math.pow((py + 0.48) / 0.12, 2)) * 0.11;
 					const radius = (0.17 + ponsBulge) * (1 - t * 0.28);
 
 					const px = Math.cos(angle) * radius * 0.92;
@@ -505,6 +595,7 @@ const structuredData = {
 						nx: Math.cos(angle),
 						ny: 0,
 						nz: Math.sin(angle),
+						sulcus: 0,
 						type: 'brainstem',
 						energy: 0,
 						phase: Math.random() * Math.PI * 2,
@@ -525,6 +616,7 @@ const structuredData = {
 							nx: 0,
 							ny: 1,
 							nz: 0,
+							sulcus: 0.5,
 							type: 'tract',
 							energy: 0,
 							phase: Math.random() * Math.PI * 2,
@@ -788,8 +880,9 @@ const structuredData = {
 
 									const dot = Math.max(0, nx2 * nlx + ny2 * nly + nz2 * nlz);
 									const depth = (z2 + 1.5) / 3.0;
-									const breathe = Math.sin(now * 0.002 + pt.phase) * 0.08;
-									const totalIntensity = Math.min(1, Math.max(0, dot * 0.5 + depth * 0.42 + breathe + pulseEnergy * 0.7));
+									const gyriBoost = pt.sulcus * 0.24;
+									const breathe = Math.sin(now * 0.002 + pt.phase) * 0.06;
+									const totalIntensity = Math.min(1, Math.max(0, dot * 0.46 + depth * 0.35 + gyriBoost + breathe + 0.12 + pulseEnergy * 0.7));
 
 									let charIndex = Math.floor(totalIntensity * (palette.length - 1));
 									let char = palette[charIndex];
@@ -805,13 +898,20 @@ const structuredData = {
 										char = totalIntensity > 0.5 ? '|' : ':';
 										colorBuffer[row][col] = `rgba(131, 246, 212, ${0.25 + depth * 0.28})`;
 									} else {
-										if (totalIntensity > 0.82) {
+										// Cortical gyri crests vs sulci valleys
+										if (pt.sulcus > 0.35 && totalIntensity > 0.65) {
+											char = totalIntensity > 0.85 ? '@' : totalIntensity > 0.75 ? '%' : '#';
 											colorBuffer[row][col] = 'rgba(202, 255, 239, 0.88)';
 											glowBuffer[row][col] = true;
-										} else if (totalIntensity > 0.5) {
+										} else if (pt.sulcus < -0.2) {
+											char = totalIntensity > 0.35 ? ':' : '.';
+											colorBuffer[row][col] = `rgba(50, 95, 80, ${0.14 + depth * 0.22})`;
+										} else if (totalIntensity > 0.48) {
+											char = totalIntensity > 0.65 ? '*' : '+';
 											colorBuffer[row][col] = `rgba(131, 246, 212, ${0.38 + depth * 0.36})`;
 										} else {
-											colorBuffer[row][col] = `rgba(60, 110, 92, ${0.14 + depth * 0.22})`;
+											char = totalIntensity > 0.25 ? '-' : ':';
+											colorBuffer[row][col] = `rgba(60, 110, 92, ${0.18 + depth * 0.22})`;
 										}
 									}
 
