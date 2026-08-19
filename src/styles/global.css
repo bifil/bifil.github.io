@@ -100,7 +100,7 @@ ul {
 	z-index: 20;
 	top: 0;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-	background: rgba(5, 5, 5, 0.86);
+	background: rgba(5, 5, 5, 0.88);
 	backdrop-filter: blur(18px);
 }
 
@@ -109,20 +109,21 @@ ul {
 	align-items: center;
 	justify-content: space-between;
 	min-height: 76px;
-	gap: 2rem;
+	gap: 1.5rem;
 }
 
 .brand {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.8rem;
+	gap: 0.85rem;
 }
 
 .brand-symbol {
 	color: var(--accent);
 	font-family: var(--mono);
-	font-size: 1.1rem;
-	font-weight: 500;
+	font-size: 1.18rem;
+	font-weight: 600;
+	letter-spacing: 0.04em;
 }
 
 .brand > span:last-child {
@@ -132,9 +133,9 @@ ul {
 }
 
 .brand strong {
-	font-size: 0.92rem;
+	font-size: 0.96rem;
 	font-weight: 600;
-	letter-spacing: 0.18em;
+	letter-spacing: 0.08em;
 }
 
 .brand small {
@@ -147,26 +148,27 @@ ul {
 .nav-links {
 	display: flex;
 	align-items: center;
-	gap: clamp(1.4rem, 2.8vw, 2.8rem);
+	gap: clamp(1.2rem, 2.2vw, 2.4rem);
 	margin-left: auto;
 }
 
-.nav-links a,
-.nav-contact {
+.nav-links a {
 	position: relative;
-	color: #b6bbb8;
-	font-family: var(--mono);
-	font-size: 0.7rem;
-	letter-spacing: 0.03em;
-	transition: color 160ms ease;
+	color: #d1d6d3;
+	font-family: var(--sans);
+	font-size: clamp(0.95rem, 1.1vw, 1.06rem);
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	padding: 0.35rem 0.15rem;
+	transition: color 180ms ease;
 }
 
 .nav-links a::after {
 	position: absolute;
 	right: 0;
-	bottom: -0.45rem;
+	bottom: -0.25rem;
 	left: 0;
-	height: 1px;
+	height: 2px;
 	transform: scaleX(0);
 	transform-origin: right;
 	background: var(--accent);
@@ -174,9 +176,8 @@ ul {
 	transition: transform 180ms ease;
 }
 
-.nav-links a:hover,
-.nav-contact:hover {
-	color: var(--ink);
+.nav-links a:hover {
+	color: #ffffff;
 }
 
 .nav-links a:hover::after {
@@ -185,13 +186,21 @@ ul {
 }
 
 .nav-contact {
-	padding: 0.65rem 0.85rem;
-	border: 1px solid var(--line);
-	color: var(--ink);
+	position: relative;
+	padding: 0.55rem 1rem;
+	border: 1px solid rgba(255, 255, 255, 0.18);
+	border-radius: 4px;
+	color: #ffffff;
+	font-family: var(--sans);
+	font-size: 0.95rem;
+	font-weight: 500;
+	transition: all 180ms ease;
 }
 
 .nav-contact:hover {
 	border-color: var(--accent);
+	background: rgba(131, 246, 212, 0.08);
+	color: var(--accent);
 }
 
 .hero {
@@ -565,6 +574,21 @@ ul {
 	align-items: start;
 }
 
+.section-anchor {
+	position: absolute;
+	top: -90px;
+	left: 0;
+	visibility: hidden;
+	pointer-events: none;
+}
+
+.team-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2rem;
+	align-items: center;
+}
+
 .pi-monogram {
 	margin: clamp(3rem, 7vw, 6rem) 0 0;
 	font-size: clamp(6rem, 15vw, 13rem);
@@ -603,46 +627,136 @@ ul {
 	line-height: 1.9;
 }
 
-.student-section {
-	padding-block: clamp(6rem, 10vw, 9rem);
-	background: var(--student);
-	color: var(--black);
+.projects-section {
+	background: var(--black);
 }
 
-.student-layout {
+.projects-grid {
 	display: grid;
-	grid-template-columns: minmax(260px, 0.9fr) minmax(0, 1.1fr);
-	gap: clamp(4rem, 10vw, 12rem);
+	grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+	gap: 2rem;
+	margin-bottom: clamp(4rem, 7vw, 6rem);
 }
 
-.student-section .section-label {
-	color: #465420;
+.project-card {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: clamp(2rem, 3.5vw, 2.8rem);
+	border: 1px solid var(--line);
+	background: var(--panel);
+	border-radius: 6px;
+	transition: border-color 200ms ease, transform 200ms ease;
 }
 
-.student-copy > p {
-	max-width: 42rem;
-	margin-bottom: 2.5rem;
-	font-size: clamp(1.1rem, 1.7vw, 1.38rem);
-	line-height: 1.75;
+.project-card:hover {
+	border-color: rgba(131, 246, 212, 0.4);
+	transform: translateY(-2px);
 }
 
-.student-copy ul {
-	margin-bottom: 3rem;
+.project-meta {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+.project-num {
+	color: var(--accent);
+	font-family: var(--mono);
+	font-size: 0.76rem;
+	font-weight: 500;
+}
+
+.project-cat {
+	color: var(--muted);
+	font-family: var(--mono);
+	font-size: 0.65rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.project-card h3 {
+	margin-bottom: 1rem;
+	font-size: clamp(1.25rem, 1.8vw, 1.55rem);
+	font-weight: 500;
+	letter-spacing: -0.03em;
+	line-height: 1.3;
+}
+
+.project-card p {
+	color: var(--muted);
+	font-size: 0.94rem;
+	line-height: 1.7;
+	margin-bottom: 1.8rem;
+}
+
+.project-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.45rem;
+	margin: 0;
 	padding: 0;
-	border-top: 1px solid rgba(5, 5, 5, 0.26);
 	list-style: none;
 }
 
-.student-copy li {
-	padding: 0.8rem 0;
-	border-bottom: 1px solid rgba(5, 5, 5, 0.26);
+.project-tags li {
+	padding: 0.35rem 0.6rem;
+	border: 1px solid #2f3331;
+	color: #aeb3b0;
 	font-family: var(--mono);
-	font-size: 0.74rem;
+	font-size: 0.62rem;
+	border-radius: 3px;
 }
 
-.student-copy li span {
+.student-callout {
+	display: grid;
+	grid-template-columns: minmax(280px, 1fr) minmax(320px, 1.2fr);
+	gap: clamp(3rem, 6vw, 6rem);
+	padding: clamp(3rem, 5vw, 4.5rem);
+	border: 1px solid rgba(131, 246, 212, 0.25);
+	background: linear-gradient(135deg, rgba(16, 24, 22, 0.9) 0%, rgba(10, 15, 14, 0.95) 100%);
+	border-radius: 8px;
+	align-items: center;
+}
+
+.student-callout-header h3 {
+	margin-bottom: 1.2rem;
+	font-size: clamp(1.75rem, 2.5vw, 2.35rem);
+	font-weight: 500;
+	letter-spacing: -0.04em;
+	color: var(--ink);
+}
+
+.student-callout-header p {
+	margin: 0;
+	color: #b0b5b2;
+	font-size: 1rem;
+	line-height: 1.8;
+}
+
+.student-callout-body ul {
+	margin-bottom: 2rem;
+	padding: 0;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+	list-style: none;
+}
+
+.student-callout-body li {
+	padding: 0.75rem 0;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+	font-family: var(--sans);
+	font-size: 0.9rem;
+	color: #d8dedb;
+}
+
+.student-callout-body li span {
 	display: inline-block;
-	width: 6rem;
+	width: 5.5rem;
+	color: var(--accent);
+	font-family: var(--mono);
+	font-size: 0.75rem;
 	font-weight: 500;
 	text-transform: uppercase;
 }
@@ -692,7 +806,7 @@ ul {
 	}
 
 	.nav-links {
-		gap: 1.4rem;
+		gap: 1.2rem;
 	}
 
 	.research-row > div {
@@ -701,9 +815,13 @@ ul {
 	}
 
 	.work-layout,
-	.people-layout,
-	.student-layout {
+	.people-layout {
 		gap: 5rem;
+	}
+
+	.student-callout {
+		grid-template-columns: 1fr;
+		gap: 2.5rem;
 	}
 }
 
@@ -739,8 +857,7 @@ ul {
 	}
 
 	.work-layout,
-	.people-layout,
-	.student-layout {
+	.people-layout {
 		grid-template-columns: 1fr;
 	}
 
@@ -762,8 +879,7 @@ ul {
 		font-size: 8rem;
 	}
 
-	.people-layout,
-	.student-layout {
+	.people-layout {
 		gap: 3.5rem;
 	}
 
