@@ -52,9 +52,9 @@ const selectedWork = [
 	},
 ];
 
-function generateAnatomicalBrain(rotX = 0.2, rotY = 0.65, width = 64, height = 30) {
+function generateAnatomicalBrain(rotX = 0.2, rotY = 0.65, width = 78, height = 36) {
 	const points: Array<{ x: number; y: number; z: number; nx: number; ny: number; nz: number; type: string }> = [];
-	const hemiCount = 1200;
+	const hemiCount = 1400;
 	for (let i = 0; i < hemiCount; i++) {
 		const phi = Math.acos(1 - (2 * (i + 0.5)) / hemiCount);
 		const theta = Math.PI * (1 + Math.sqrt(5)) * i;
@@ -88,7 +88,7 @@ function generateAnatomicalBrain(rotX = 0.2, rotY = 0.65, width = 64, height = 3
 		if (py < -0.38 && absSx < 0.35 && pz > -0.35 && pz < 0.2) continue;
 		points.push({ x: px, y: py, z: pz, nx: sx * signX, ny: sy, nz: sz, type: 'cortex' });
 	}
-	const cerebCount = 450;
+	const cerebCount = 500;
 	for (let i = 0; i < cerebCount; i++) {
 		const phi = Math.acos(1 - (2 * (i + 0.5)) / cerebCount);
 		const theta = Math.PI * (1 + Math.sqrt(5)) * i;
@@ -103,7 +103,7 @@ function generateAnatomicalBrain(rotX = 0.2, rotY = 0.65, width = 64, height = 3
 		const pz = (sz * 0.54 - 0.62) * (1 + folia);
 		points.push({ x: px, y: py, z: pz, nx: sx * signX, ny: sy, nz: sz, type: 'cerebellum' });
 	}
-	const stemCount = 180;
+	const stemCount = 200;
 	for (let i = 0; i < stemCount; i++) {
 		const t = i / stemCount;
 		const angle = ((i % 16) / 16) * Math.PI * 2;
@@ -137,7 +137,7 @@ function generateAnatomicalBrain(rotX = 0.2, rotY = 0.65, width = 64, height = 3
 		const nx2 = nx1;
 		const ny2 = ny1 * cosX - nz1 * sinX;
 		const nz2 = ny1 * sinX + nz1 * cosX;
-		const factor = 36 / (3.2 + z2);
+		const factor = 46 / (3.0 + z2);
 		const px = Math.floor(width / 2 + x2 * factor * 2.0);
 		const py = Math.floor(height / 2 - y2 * factor);
 		if (px >= 0 && px < width && py >= 0 && py < height && z2 > zbuf[py][px]) {
@@ -150,7 +150,7 @@ function generateAnatomicalBrain(rotX = 0.2, rotY = 0.65, width = 64, height = 3
 	return grid.map((r) => r.join('')).join('\n');
 }
 
-const fallbackAscii = generateAnatomicalBrain(0.2, 0.65, 66, 32);
+const fallbackAscii = generateAnatomicalBrain(0.2, 0.65, 78, 36);
 
 const structuredData = {
 	'@context': 'https://schema.org',
@@ -202,8 +202,8 @@ const structuredData = {
 		<header class="site-header">
 			<nav class="nav shell" aria-label="Primary navigation">
 				<a class="brand" href="#top" aria-label="BIFIL home">
-					<span class="brand-symbol" aria-hidden="true">B/</span>
-					<span><strong>BIFIL</strong><small>DGIST</small></span>
+					<span class="brand-symbol" aria-hidden="true">BIFIL</span>
+					<span><strong>Biomedical Imaging and Frontier Intelligence Laboratory</strong><small>DGIST</small></span>
 				</a>
 
 				<div class="nav-links">
@@ -586,8 +586,8 @@ const structuredData = {
 						ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 					}
 
-					fontSize = width < 480 ? 10 : width < 768 ? 11 : 12.5;
-					charH = Math.round(fontSize * 1.28);
+					fontSize = width < 480 ? 10.5 : width < 768 ? 12 : 13;
+					charH = Math.round(fontSize * 1.24);
 
 					if (ctx) {
 						ctx.font = `${fontSize}px 'DM Mono', Consolas, monospace`;
@@ -753,8 +753,8 @@ const structuredData = {
 							const nz2 = ny1 * sinX + nz1 * cosX;
 
 							// Perspective projection
-							const camDist = 3.3;
-							const scale = Math.min(width, height) * 0.48;
+							const camDist = 3.0;
+							const scale = Math.min(width * 1.15, height * 1.35) * 0.94;
 							const factor = scale / (camDist + z2);
 
 							const col = Math.floor(cols / 2 + (x2 * factor * 1.95) / charW);
