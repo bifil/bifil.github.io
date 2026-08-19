@@ -203,7 +203,7 @@ const structuredData = {
 			<nav class="nav shell" aria-label="Primary navigation">
 				<a class="brand" href="#top" aria-label="BIFIL home">
 					<span class="brand-symbol" aria-hidden="true">BIFIL</span>
-					<span><strong>Biomedical Imaging and Frontier Intelligence Laboratory</strong><small>DGIST</small></span>
+					<span><strong>Biomedical Imaging and Frontier Intelligence Laboratory | DGIST</strong></span>
 				</a>
 
 				<div class="nav-links">
@@ -219,7 +219,21 @@ const structuredData = {
 
 		<main id="main">
 			<section class="hero" id="top">
-				<div class="shell hero-grid">
+				<div
+					class="hero-brain-backdrop"
+					data-brain
+					role="img"
+					aria-label="Interactive 3D ASCII human brain background"
+					tabindex="0"
+				>
+					<div class="brain-halo" aria-hidden="true"></div>
+					<canvas id="brain-canvas" class="brain-canvas" aria-hidden="true"></canvas>
+					<noscript>
+						<pre class="brain-fallback" aria-hidden="true">{fallbackAscii}</pre>
+					</noscript>
+				</div>
+
+				<div class="shell hero-content">
 					<div class="hero-copy">
 						<p class="eyebrow">BIFIL / Biomedical Imaging + Frontier Intelligence</p>
 						<h1>Intelligence from<br /><em>incomplete</em><br />measurements.</h1>
@@ -231,20 +245,6 @@ const structuredData = {
 							<a class="button button-primary" href="#research">Explore research <span>↓</span></a>
 							<a class="text-link" href="#students">Join the lab <span>↗</span></a>
 						</div>
-					</div>
-
-					<div
-						class="ascii-visual"
-						data-brain
-						role="img"
-						aria-label="Interactive 3D ASCII human brain model"
-						tabindex="0"
-					>
-						<div class="brain-halo" aria-hidden="true"></div>
-						<canvas id="brain-canvas" class="brain-canvas" aria-hidden="true"></canvas>
-						<noscript>
-							<pre class="brain-fallback" aria-hidden="true">{fallbackAscii}</pre>
-						</noscript>
 					</div>
 				</div>
 
@@ -753,12 +753,15 @@ const structuredData = {
 							const nz2 = ny1 * sinX + nz1 * cosX;
 
 							// Perspective projection
-							const camDist = 3.0;
-							const scale = Math.min(width * 1.15, height * 1.35) * 0.94;
+							const camDist = 3.2;
+							const scale = Math.min(width * 0.72, height * 1.05) * 0.98;
 							const factor = scale / (camDist + z2);
 
-							const col = Math.floor(cols / 2 + (x2 * factor * 1.95) / charW);
-							const row = Math.floor(rows / 2 - (y2 * factor) / charH);
+							const centerCol = width >= 860 ? Math.floor(cols * 0.58) : Math.floor(cols * 0.5);
+							const centerRow = Math.floor(rows * 0.48);
+
+							const col = Math.floor(centerCol + (x2 * factor * 1.95) / charW);
+							const row = Math.floor(centerRow - (y2 * factor) / charH);
 
 							if (col >= 0 && col < cols && row >= 0 && row < rows) {
 								if (z2 > zBuffer[row][col]) {
@@ -797,18 +800,18 @@ const structuredData = {
 										glowBuffer[row][col] = true;
 									} else if (pt.type === 'cerebellum') {
 										char = totalIntensity > 0.6 ? '=' : totalIntensity > 0.35 ? '~' : '-';
-										colorBuffer[row][col] = `rgba(131, 246, 212, ${0.55 + depth * 0.4})`;
+										colorBuffer[row][col] = `rgba(131, 246, 212, ${0.28 + depth * 0.3})`;
 									} else if (pt.type === 'brainstem') {
 										char = totalIntensity > 0.5 ? '|' : ':';
-										colorBuffer[row][col] = `rgba(131, 246, 212, ${0.5 + depth * 0.4})`;
+										colorBuffer[row][col] = `rgba(131, 246, 212, ${0.25 + depth * 0.28})`;
 									} else {
 										if (totalIntensity > 0.82) {
-											colorBuffer[row][col] = '#caffef';
+											colorBuffer[row][col] = 'rgba(202, 255, 239, 0.88)';
 											glowBuffer[row][col] = true;
 										} else if (totalIntensity > 0.5) {
-											colorBuffer[row][col] = `rgba(131, 246, 212, ${0.7 + depth * 0.25})`;
+											colorBuffer[row][col] = `rgba(131, 246, 212, ${0.38 + depth * 0.36})`;
 										} else {
-											colorBuffer[row][col] = `rgba(95, 125, 115, ${0.35 + depth * 0.45})`;
+											colorBuffer[row][col] = `rgba(60, 110, 92, ${0.14 + depth * 0.22})`;
 										}
 									}
 
