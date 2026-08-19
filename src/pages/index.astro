@@ -52,112 +52,65 @@ const selectedWork = [
 	},
 ];
 
-function generateLateralBrainMap(width = 92, height = 40) {
-	const grid = Array.from({ length: height }, () => Array(width).fill(' '));
-	const intensityGrid = Array.from({ length: height }, () => Array(width).fill(0));
-	const typeGrid = Array.from({ length: height }, () => Array(width).fill(''));
+const BRAIN_ASCII_ART = [
+	'                                        r 4 a 0 p e 2 x n c c f f u 4 h >',
+	'                              x 4 d w D 1      " 4 f   : w         ) h d (',
+	'                          4 m b u c n D 2        e i     c 4         : o h 0 t',
+	'                      x c x 8 :    r 9 y         4 r     h y         8 n 2 % 0 (',
+	'                  n e 1 n M t      9 t           p       t D e p 8 8 m 2 t D M 4 l   n o',
+	'            x a r     b u          h w           a       l m p l     o M e "         i p >',
+	'        ) b =         ( p          2 2           h       p (         0 x             0 8 (',
+	'      2 y             b -          %             4       =           u o             t w e y',
+	'    = d               0            a r           |         1         u y         b   m > 4 t',
+	'  h c       "         b            h "     n                   r e   1 ,         o x o n " e l',
+	'  " p       n =     > c w                  r 4                 b :               p x m i : a >',
+	't 2         u % m 0 2 e 8 0 -              ) a                 p t             = D % o y e r a u',
+	'c h         2 8 y -         c w            % )             = o a               y h l " 1 : M b 0 P D a',
+	'o y   h ) i - p o           8            (    n m h e a w w d M 4                            % " : 0 % a',
+	'2 >   I 4 0 D d     u c     M c        " 9 f  > 0 M M n r - f u                 e "              m - M o a',
+	'u >             i D "       w >    - M e   ( D > x m b 1 -                     h 4              p x 0 y f n',
+	'r 4             8           r m    (       i % 8 % 1 :                         c 9 :            f w d y : e',
+	'p               : m         0 f            t D D (     t ,                     y 8 i            l u D 4 : % o - ) 4',
+	'1 t             - 2 p       t w            ( % h l     ( e         "           y 9 r            % 8 a 9 9 r " 8 4 - 2 i',
+	'b               : o 4 (     - D "          r 2 d       a 1         r b t       = % (            - D (   t m : : m x ) d',
+	'o )                         b f     " n D m c           i 8 > - i 1 o d M n t = y w 0 :          f 9 y e ( % > a l',
+	'i h                         y e ) y m b > "             ( M u y 8 w h n y 0 8 9 p h d           ( % t " % : 9 M w 0',
+	'p           1 2 a o         - 1 p D b = -               x M M 9 x i : " " : - :                 ( e D u D e 4 c ) u 2 d % 0 r',
+	't c     e w % = -           t 8 8 4 l ,                 l h p = -                               1 a u i D x = 4 M c t y d c d',
+	'0       i 0 - w -                                       = p 9 ( ,                                       D " p r e',
+	'f f     2 = -       h 9 i : 4 m t                       _ ( e m n r                     i 1 f ) " f t % n',
+	'p       m           u % o m r                       = h 4 % h ) :           _ l f 9 b p 8 0 y ( - , t 8 y a f i',
+	'0 ) p p M           c % 2                       l p M w =               i > > f o b D m n ) _ r f e 8 9 y x d M p l = (',
+	'9 b f i %           > % =                       = 8 M o ) ,             = 8 M 9 d 4 u w % o " " = e d y 1 n w " " u',
+	'e %     m   l y     % c     t                   n D h o o           - > 8 4 1 r : : r x D T 1 9 - u w 2',
+	'- p     2 ( y t     a o     h i                                     l y m n i , > 8 r = 0 y % 9 D ) , 8',
+	'2       8   ( w 2   = 8 :   t u w u 9 w = "     > 0 n 9 w t "       > w r r ) 2 M > : i M r',
+	'0       > p         9 >     = M d i             - f M 9 x i         ( m > r r = c u n o o 1 - 2 = 9 c',
+	'0       1           - %     ( m (               f 0 x r ,           : ( % o 0 m 9 b d e h 2 w D 8 2 ) c n e',
+	'8 a                 4 n _ f w n n               u u r :         , i l ) o D b u f x x x 1 t u o h o h m w f d ) b',
+	'u d e               f D m m m p a >             r i ,         _ r 1 m 8 m w y n 0 m 8 9 w 9 m 9 4 h w h y y d % x y n d',
+	'a D                 a b ) " 1 d d d i                         - l x e D 2 = = y 9 0 n 1 ) r i i r > h m a e o o > f 0 9 l n c b f x',
+	'" 9                 : m , 2 9 m (                             i u 8 8 0 D f ) 4 8 x i _ 1 x t i , " ( a 9 o 1 o c t x % = i e a 4 x 0',
+	'b                   0 =     e M M y a           > a b =       , l d 9 1 > d e 1 4 p 1 " - , l = f x x x f ( 1 2 d o = o c f M 9 u ) w " d',
+	') 0                         1 M M 0 8           1 M D d y     x M 4 i , f % 2 p ( ) = - l ( ( r : - > c n u c ( > 2 t b e y w > n t',
+	'2 :                         d h f % D ,         r m w ) -     _ u M c " n M T i 1 i t t " : ( 1 f 1 ) : " = u a o c D o i b',
+	'2                           ) % -               r D ( - : l b m l " h m e x > D > x l c ) r 1 f l , " ( 1 1 t > a n w 0 -',
+	'd                           l 4 M D 9 % % m 8 a r u M x t 2 , " w f - 1 y c c l - ) f = , - ) > 1 = - " h 2 y n',
+	'> h -   l = c e b 2 c 4 M d x > l i y a l r p ( : b 1 i u o u u t i ) x 1 : = x c ) > l : % t ( 2 p',
+	'" o h h n b u = l r l 1 a D p x l " l 9 y t = u b " d c " ) r i ( o 4 4 4 n 1 ) f x i f 1 4 a , h u 1 4 =',
+	'c e a d a e 2 u > p e b 0 w w 9 4 ( _ > p D p d d b w n f 8 u f x c c x f y 2 e a 2 n x ) = > h c " 8',
+	'a i y b 9 w c l i : : l w f " x w M M % p e e a 2 h e a 2 o i = > y h',
+	'p i : % t % d ) r 4 D 0 4 % M M M M % b e 4 n f , ) u w 0',
+	'> M ) : l 4 w n 9 2 = x 9 1 p p 0 % a 0 h D D M D M 8 8 9 9 a u -',
+	'M 9 r c b p a c ) ( t h D D 0 l _ d m h 0 y d a d a r - : ,',
+	'( M % h n y - _ n d r _ i l c p b 0 0 p % ) , u 8 e b d b b l',
+	'- 0 % m b 8 f l t h 9 4 ( ) t h b n _ , f 0 - , c b D b >',
+	') o 0 D D M M 8 w p a n ) : u d c 2',
+	'y b : 8',
+	't w > b',
+];
 
-	for (let r = 0; r < height; r++) {
-		for (let c = 0; c < width; c++) {
-			const u = (c / (width - 1) - 0.5) * 2.3;
-			const v = (0.5 - r / (height - 1)) * 2.1;
-
-			const uCortex = u - 0.02;
-			const vCortex = v - 0.12;
-			const frontalTaper = u > 0 ? 1.0 - 0.08 * u : 1.0 + 0.12 * u;
-			const topDome = v > 0 ? 1.0 - 0.05 * v : 1.0;
-
-			const rOuter =
-				Math.pow(Math.abs(uCortex / (0.92 * frontalTaper)), 2.3) +
-				Math.pow(Math.abs(vCortex / (0.8 * topDome)), 2.3);
-
-			const cortexMask = rOuter <= 1.0;
-			const sylvianFissure =
-				v > -0.18 &&
-				v < 0.04 &&
-				u > -0.05 &&
-				u < 0.68 &&
-				Math.sin(((v + 0.18) / 0.22) * Math.PI) > 0.65 &&
-				u > 0.05 + (0.04 - v) * 2.0;
-
-			const cerebellarCutout = u < 0.08 && v < -0.15 && (u < -0.12 || v < -0.28);
-			const inCortex = cortexMask && !sylvianFissure && !cerebellarCutout;
-
-			const uCereb = (u + 0.42) / 0.36;
-			const vCereb = (v + 0.45) / 0.25;
-			const rCereb = uCereb * uCereb + vCereb * vCereb;
-			const inCerebellum = rCereb <= 1.0 && u < 0.02 && v < -0.16 && v > -0.74;
-
-			const inBrainstem =
-				u >= -0.15 &&
-				u <= 0.14 &&
-				v <= -0.25 &&
-				v >= -0.92 &&
-				u <= 0.1 + 0.08 * Math.exp(-Math.pow((v + 0.52) / 0.14, 2));
-
-			if (inCortex) {
-				const w1 = Math.sin(7.5 * v + 4.5 * u) * 0.25;
-				const w2 = Math.cos(7.0 * u + 5.0 * v) * 0.25;
-				const uw = u + w1;
-				const vw = v + w2;
-
-				const centralDist = Math.abs(u - 0.55 * v - 0.12);
-				const isCentralSulcus = centralDist < 0.06 && v > -0.15;
-
-				const g1 = Math.sin(15.0 * uw + 11.0 * vw);
-				const g2 = Math.cos(14.0 * vw - 10.0 * uw + Math.sin(12.0 * uw) * 1.5);
-				const g3 = Math.sin(19.0 * uw - 15.0 * vw) * 0.4;
-				const gyriWave = g1 * 0.55 + g2 * 0.45 + g3;
-
-				const edge = rOuter > 0.88;
-				const intensity = isCentralSulcus
-					? 0.15
-					: edge
-						? 0.85
-						: Math.max(0.1, Math.min(1.0, 0.5 + gyriWave * 0.45));
-
-				intensityGrid[r][c] = intensity;
-				typeGrid[r][c] = isCentralSulcus ? 'sulcus' : edge ? 'edge' : 'gyrus';
-			} else if (inCerebellum) {
-				const folia = (Math.sin(v * 45.0) + 1.0) * 0.5;
-				const edge = rCereb > 0.85;
-				intensityGrid[r][c] = edge ? 0.75 : 0.35 + folia * 0.45;
-				typeGrid[r][c] = 'cerebellum';
-			} else if (inBrainstem) {
-				const edge = u <= -0.13 || u >= 0.08;
-				intensityGrid[r][c] = edge ? 0.7 : 0.45;
-				typeGrid[r][c] = 'brainstem';
-			}
-		}
-	}
-
-	const palette = [' ', '.', ':', '-', '=', '+', '*', '#', '%', '@'];
-	const cerebChars = ['-', '~', '=', '≡', '='];
-
-	for (let r = 0; r < height; r++) {
-		for (let c = 0; c < width; c++) {
-			const type = typeGrid[r][c];
-			const val = intensityGrid[r][c];
-			if (!type) continue;
-
-			if (type === 'cerebellum') {
-				const idx = Math.min(cerebChars.length - 1, Math.floor(val * cerebChars.length));
-				grid[r][c] = cerebChars[idx];
-			} else if (type === 'brainstem') {
-				grid[r][c] = val > 0.6 ? '|' : ':';
-			} else if (type === 'sulcus') {
-				grid[r][c] = '.';
-			} else {
-				const idx = Math.min(palette.length - 1, Math.floor(val * (palette.length - 1)) + 1);
-				grid[r][c] = palette[idx];
-			}
-		}
-	}
-
-	return grid.map((row) => row.join('')).join('\n');
-}
-
-const fallbackAscii = generateLateralBrainMap(92, 40);
+const fallbackAscii = BRAIN_ASCII_ART.join('\n');
 
 const structuredData = {
 	'@context': 'https://schema.org',
@@ -366,12 +319,68 @@ const structuredData = {
 		</footer>
 
 		<script>
-			interface LateralNode {
-				u: number;
-				v: number;
+			const BRAIN_ASCII = [
+				'                                        r 4 a 0 p e 2 x n c c f f u 4 h >',
+				'                              x 4 d w D 1      " 4 f   : w         ) h d (',
+				'                          4 m b u c n D 2        e i     c 4         : o h 0 t',
+				'                      x c x 8 :    r 9 y         4 r     h y         8 n 2 % 0 (',
+				'                  n e 1 n M t      9 t           p       t D e p 8 8 m 2 t D M 4 l   n o',
+				'            x a r     b u          h w           a       l m p l     o M e "         i p >',
+				'        ) b =         ( p          2 2           h       p (         0 x             0 8 (',
+				'      2 y             b -          %             4       =           u o             t w e y',
+				'    = d               0            a r           |         1         u y         b   m > 4 t',
+				'  h c       "         b            h "     n                   r e   1 ,         o x o n " e l',
+				'  " p       n =     > c w                  r 4                 b :               p x m i : a >',
+				't 2         u % m 0 2 e 8 0 -              ) a                 p t             = D % o y e r a u',
+				'c h         2 8 y -         c w            % )             = o a               y h l " 1 : M b 0 P D a',
+				'o y   h ) i - p o           8            (    n m h e a w w d M 4                            % " : 0 % a',
+				'2 >   I 4 0 D d     u c     M c        " 9 f  > 0 M M n r - f u                 e "              m - M o a',
+				'u >             i D "       w >    - M e   ( D > x m b 1 -                     h 4              p x 0 y f n',
+				'r 4             8           r m    (       i % 8 % 1 :                         c 9 :            f w d y : e',
+				'p               : m         0 f            t D D (     t ,                     y 8 i            l u D 4 : % o - ) 4',
+				'1 t             - 2 p       t w            ( % h l     ( e         "           y 9 r            % 8 a 9 9 r " 8 4 - 2 i',
+				'b               : o 4 (     - D "          r 2 d       a 1         r b t       = % (            - D (   t m : : m x ) d',
+				'o )                         b f     " n D m c           i 8 > - i 1 o d M n t = y w 0 :          f 9 y e ( % > a l',
+				'i h                         y e ) y m b > "             ( M u y 8 w h n y 0 8 9 p h d           ( % t " % : 9 M w 0',
+				'p           1 2 a o         - 1 p D b = -               x M M 9 x i : " " : - :                 ( e D u D e 4 c ) u 2 d % 0 r',
+				't c     e w % = -           t 8 8 4 l ,                 l h p = -                               1 a u i D x = 4 M c t y d c d',
+				'0       i 0 - w -                                       = p 9 ( ,                                       D " p r e',
+				'f f     2 = -       h 9 i : 4 m t                       _ ( e m n r                     i 1 f ) " f t % n',
+				'p       m           u % o m r                       = h 4 % h ) :           _ l f 9 b p 8 0 y ( - , t 8 y a f i',
+				'0 ) p p M           c % 2                       l p M w =               i > > f o b D m n ) _ r f e 8 9 y x d M p l = (',
+				'9 b f i %           > % =                       = 8 M o ) ,             = 8 M 9 d 4 u w % o " " = e d y 1 n w " " u',
+				'e %     m   l y     % c     t                   n D h o o           - > 8 4 1 r : : r x D T 1 9 - u w 2',
+				'- p     2 ( y t     a o     h i                                     l y m n i , > 8 r = 0 y % 9 D ) , 8',
+				'2       8   ( w 2   = 8 :   t u w u 9 w = "     > 0 n 9 w t "       > w r r ) 2 M > : i M r',
+				'0       > p         9 >     = M d i             - f M 9 x i         ( m > r r = c u n o o 1 - 2 = 9 c',
+				'0       1           - %     ( m (               f 0 x r ,           : ( % o 0 m 9 b d e h 2 w D 8 2 ) c n e',
+				'8 a                 4 n _ f w n n               u u r :         , i l ) o D b u f x x x 1 t u o h o h m w f d ) b',
+				'u d e               f D m m m p a >             r i ,         _ r 1 m 8 m w y n 0 m 8 9 w 9 m 9 4 h w h y y d % x y n d',
+				'a D                 a b ) " 1 d d d i                         - l x e D 2 = = y 9 0 n 1 ) r i i r > h m a e o o > f 0 9 l n c b f x',
+				'" 9                 : m , 2 9 m (                             i u 8 8 0 D f ) 4 8 x i _ 1 x t i , " ( a 9 o 1 o c t x % = i e a 4 x 0',
+				'b                   0 =     e M M y a           > a b =       , l d 9 1 > d e 1 4 p 1 " - , l = f x x x f ( 1 2 d o = o c f M 9 u ) w " d',
+				') 0                         1 M M 0 8           1 M D d y     x M 4 i , f % 2 p ( ) = - l ( ( r : - > c n u c ( > 2 t b e y w > n t',
+				'2 :                         d h f % D ,         r m w ) -     _ u M c " n M T i 1 i t t " : ( 1 f 1 ) : " = u a o c D o i b',
+				'2                           ) % -               r D ( - : l b m l " h m e x > D > x l c ) r 1 f l , " ( 1 1 t > a n w 0 -',
+				'd                           l 4 M D 9 % % m 8 a r u M x t 2 , " w f - 1 y c c l - ) f = , - ) > 1 = - " h 2 y n',
+				'> h -   l = c e b 2 c 4 M d x > l i y a l r p ( : b 1 i u o u u t i ) x 1 : = x c ) > l : % t ( 2 p',
+				'" o h h n b u = l r l 1 a D p x l " l 9 y t = u b " d c " ) r i ( o 4 4 4 n 1 ) f x i f 1 4 a , h u 1 4 =',
+				'c e a d a e 2 u > p e b 0 w w 9 4 ( _ > p D p d d b w n f 8 u f x c c x f y 2 e a 2 n x ) = > h c " 8',
+				'a i y b 9 w c l i : : l w f " x w M M % p e e a 2 h e a 2 o i = > y h',
+				'p i : % t % d ) r 4 D 0 4 % M M M M % b e 4 n f , ) u w 0',
+				'> M ) : l 4 w n 9 2 = x 9 1 p p 0 % a 0 h D D M D M 8 8 9 9 a u -',
+				'M 9 r c b p a c ) ( t h D D 0 l _ d m h 0 y d a d a r - : ,',
+				'( M % h n y - _ n d r _ i l c p b 0 0 p % ) , u 8 e b d b b l',
+				'- 0 % m b 8 f l t h 9 4 ( ) t h b n _ , f 0 - , c b D b >',
+				') o 0 D D M M 8 w p a n ) : u d c 2',
+				'y b : 8',
+				't w > b',
+			];
+
+			interface BrainMatrixNode {
+				row: number;
+				col: number;
 				char: string;
-				type: 'gyrus' | 'sulcus' | 'edge' | 'cerebellum' | 'brainstem';
-				intensity: number;
 				phase: number;
 				baseX: number;
 				baseY: number;
@@ -392,105 +401,17 @@ const structuredData = {
 				maxRadius: number;
 			}
 
-			function createLateralBrainNodes(): LateralNode[] {
-				const nodes: LateralNode[] = [];
-				const width = 94;
-				const height = 42;
-
-				const palette = [' ', '.', ':', '-', '=', '+', '*', '#', '%', '@'];
-				const cerebChars = ['-', '~', '=', '≡', '='];
-
-				for (let r = 0; r < height; r++) {
-					for (let c = 0; c < width; c++) {
-						const u = (c / (width - 1) - 0.5) * 2.3;
-						const v = (0.5 - r / (height - 1)) * 2.1;
-
-						const uCortex = u - 0.02;
-						const vCortex = v - 0.12;
-						const frontalTaper = u > 0 ? 1.0 - 0.08 * u : 1.0 + 0.12 * u;
-						const topDome = v > 0 ? 1.0 - 0.05 * v : 1.0;
-
-						const rOuter =
-							Math.pow(Math.abs(uCortex / (0.92 * frontalTaper)), 2.3) +
-							Math.pow(Math.abs(vCortex / (0.8 * topDome)), 2.3);
-
-						const cortexMask = rOuter <= 1.0;
-						const sylvianFissure =
-							v > -0.18 &&
-							v < 0.04 &&
-							u > -0.05 &&
-							u < 0.68 &&
-							Math.sin(((v + 0.18) / 0.22) * Math.PI) > 0.65 &&
-							u > 0.05 + (0.04 - v) * 2.0;
-
-						const cerebellarCutout = u < 0.08 && v < -0.15 && (u < -0.12 || v < -0.28);
-						const inCortex = cortexMask && !sylvianFissure && !cerebellarCutout;
-
-						const uCereb = (u + 0.42) / 0.36;
-						const vCereb = (v + 0.45) / 0.25;
-						const rCereb = uCereb * uCereb + vCereb * vCereb;
-						const inCerebellum = rCereb <= 1.0 && u < 0.02 && v < -0.16 && v > -0.74;
-
-						const inBrainstem =
-							u >= -0.15 &&
-							u <= 0.14 &&
-							v <= -0.25 &&
-							v >= -0.92 &&
-							u <= 0.1 + 0.08 * Math.exp(-Math.pow((v + 0.52) / 0.14, 2));
-
-						let type: 'gyrus' | 'sulcus' | 'edge' | 'cerebellum' | 'brainstem' | null = null;
-						let intensity = 0;
-						let char = ' ';
-
-						if (inCortex) {
-							const w1 = Math.sin(7.5 * v + 4.5 * u) * 0.25;
-							const w2 = Math.cos(7.0 * u + 5.0 * v) * 0.25;
-							const uw = u + w1;
-							const vw = v + w2;
-
-							const centralDist = Math.abs(u - 0.55 * v - 0.12);
-							const isCentralSulcus = centralDist < 0.06 && v > -0.15;
-
-							const g1 = Math.sin(15.0 * uw + 11.0 * vw);
-							const g2 = Math.cos(14.0 * vw - 10.0 * uw + Math.sin(12.0 * uw) * 1.5);
-							const g3 = Math.sin(19.0 * uw - 15.0 * vw) * 0.4;
-							const gyriWave = g1 * 0.55 + g2 * 0.45 + g3;
-
-							const edge = rOuter > 0.88;
-							intensity = isCentralSulcus
-								? 0.15
-								: edge
-									? 0.85
-									: Math.max(0.1, Math.min(1.0, 0.5 + gyriWave * 0.45));
-
-							type = isCentralSulcus ? 'sulcus' : edge ? 'edge' : 'gyrus';
-							if (type === 'sulcus') {
-								char = '.';
-							} else {
-								const idx = Math.min(palette.length - 1, Math.floor(intensity * (palette.length - 1)) + 1);
-								char = palette[idx];
-							}
-						} else if (inCerebellum) {
-							const folia = (Math.sin(v * 45.0) + 1.0) * 0.5;
-							const edge = rCereb > 0.85;
-							intensity = edge ? 0.75 : 0.35 + folia * 0.45;
-							type = 'cerebellum';
-							const idx = Math.min(cerebChars.length - 1, Math.floor(intensity * cerebChars.length));
-							char = cerebChars[idx];
-						} else if (inBrainstem) {
-							const edge = u <= -0.13 || u >= 0.08;
-							intensity = edge ? 0.7 : 0.45;
-							type = 'brainstem';
-							char = intensity > 0.6 ? '|' : ':';
-						}
-
-						if (type && char !== ' ') {
+			function createMatrixBrainNodes(): BrainMatrixNode[] {
+				const nodes: BrainMatrixNode[] = [];
+				for (let r = 0; r < BRAIN_ASCII.length; r++) {
+					const line = BRAIN_ASCII[r];
+					for (let c = 0; c < line.length; c++) {
+						const char = line[c];
+						if (char !== ' ') {
 							nodes.push({
-								u,
-								v,
+								row: r,
+								col: c,
 								char,
-								type,
-								intensity,
 								phase: Math.random() * Math.PI * 2,
 								baseX: 0,
 								baseY: 0,
@@ -505,7 +426,6 @@ const structuredData = {
 						}
 					}
 				}
-
 				return nodes;
 			}
 
@@ -515,7 +435,7 @@ const structuredData = {
 
 			if (canvas && container) {
 				const ctx = canvas.getContext('2d');
-				const nodes = createLateralBrainNodes();
+				const nodes = createMatrixBrainNodes();
 				const pulses: SynapticPulse[] = [];
 
 				let width = 0;
@@ -542,16 +462,20 @@ const structuredData = {
 						ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 					}
 
-					fontSize = width < 480 ? 9.5 : width < 768 ? 11 : 12.5;
+					fontSize = width < 480 ? 9 : width < 768 ? 10.5 : width < 1200 ? 12 : 13.5;
+					const charW = fontSize * 0.72;
+					const charH = fontSize * 1.25;
 
 					const originX = width >= 860 ? width * 0.58 : width * 0.5;
-					const originY = height * 0.48;
-					const brainScale = Math.min(width * 0.4, height * 0.46);
+					const originY = height * 0.5;
+
+					const centerCol = 43;
+					const centerRow = 27;
 
 					for (let i = 0; i < nodes.length; i++) {
 						const node = nodes[i];
-						node.baseX = originX + node.u * brainScale * 1.05;
-						node.baseY = originY - node.v * brainScale;
+						node.baseX = originX + (node.col - centerCol) * charW;
+						node.baseY = originY + (node.row - centerRow) * charH;
 						if (node.currX === 0 && node.currY === 0) {
 							node.currX = node.baseX;
 							node.currY = node.baseY;
@@ -570,8 +494,8 @@ const structuredData = {
 						x: originX,
 						y: originY,
 						time: performance.now(),
-						speed: 260, // px per second
-						maxRadius: Math.max(width, height) * 0.6,
+						speed: 280, // px per second
+						maxRadius: Math.max(width, height) * 0.65,
 					});
 					if (pulses.length > 5) pulses.shift();
 				};
@@ -588,7 +512,7 @@ const structuredData = {
 					container.style.setProperty('--cursor-x', `${relX * 100}%`);
 					container.style.setProperty('--cursor-y', `${relY * 100}%`);
 
-					// Apply fluid morphing to nearby nodes
+					// Apply fluid elastic morphing to nearby nodes
 					const influenceRadius = Math.min(240, width * 0.28);
 					for (let i = 0; i < nodes.length; i++) {
 						const node = nodes[i];
@@ -694,7 +618,7 @@ const structuredData = {
 							node.energy *= 0.94;
 
 							// Subtle breathing wave
-							const breathe = Math.sin(now * 0.002 + node.phase) * 0.6;
+							const breathe = Math.sin(now * 0.0018 + node.phase) * 0.5;
 							const drawY = node.currY + breathe;
 							const drawX = node.currX;
 
@@ -703,21 +627,12 @@ const structuredData = {
 								ctx.fillStyle = '#ffffff';
 								ctx.shadowColor = '#83f6d4';
 								ctx.shadowBlur = 10;
-							} else if (node.type === 'edge' || (node.type === 'gyrus' && node.intensity > 0.7)) {
-								ctx.fillStyle = 'rgba(202, 255, 239, 0.88)';
+							} else if (node.energy > 0.2) {
+								ctx.fillStyle = 'rgba(202, 255, 239, 0.95)';
 								ctx.shadowColor = '#83f6d4';
-								ctx.shadowBlur = 4;
-							} else if (node.type === 'cerebellum') {
-								ctx.fillStyle = `rgba(131, 246, 212, ${0.35 + node.energy * 0.4})`;
-								ctx.shadowBlur = 0;
-							} else if (node.type === 'brainstem') {
-								ctx.fillStyle = `rgba(131, 246, 212, ${0.32 + node.energy * 0.4})`;
-								ctx.shadowBlur = 0;
-							} else if (node.type === 'sulcus') {
-								ctx.fillStyle = 'rgba(60, 110, 92, 0.22)';
-								ctx.shadowBlur = 0;
+								ctx.shadowBlur = 5;
 							} else {
-								ctx.fillStyle = `rgba(131, 246, 212, ${0.45 + node.intensity * 0.35 + node.energy * 0.4})`;
+								ctx.fillStyle = 'rgba(131, 246, 212, 0.72)';
 								ctx.shadowBlur = 0;
 							}
 
