@@ -65,7 +65,7 @@ export const journalPublications: Publication[] = [
 		details: '58(6): 354–363',
 		note: 'First author',
 		badge: 'First Author',
-		topic: 'MRI-Free Quantification',
+		topic: 'MRI-Free Quantification for DAT PET',
 	},
 	{
 		id: 23,
@@ -75,7 +75,7 @@ export const journalPublications: Publication[] = [
 		venue: 'Journal of Nuclear Medicine',
 		details: '65(10): 1645–1651',
 		note: 'Co-corresponding author',
-		badge: 'Corresponding',
+		badge: 'Co-Corresponding',
 		topic: 'FDG PET Quantification',
 	},
 	{
@@ -105,7 +105,7 @@ export const journalPublications: Publication[] = [
 		details: '64(4): 659–666',
 		note: 'First author',
 		badge: 'First Author',
-		topic: 'Deep Learning Quantification',
+		topic: 'Deep Learning-based Quantification',
 	},
 	{
 		id: 19,
@@ -175,7 +175,7 @@ export const journalPublications: Publication[] = [
 		details: '66(9): 095010',
 		note: 'First author',
 		badge: 'First Author',
-		topic: 'Variational PET Reconstruction',
+		topic: 'Inverse problem & PET Reconstruction',
 	},
 	{
 		id: 12,
