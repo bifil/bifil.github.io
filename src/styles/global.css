@@ -530,7 +530,34 @@ ul {
 }
 
 .work-heading h2 {
-	margin-bottom: 2.2rem;
+	margin-bottom: 1.5rem;
+}
+
+.pub-summary-stats {
+	display: flex;
+	flex-direction: column;
+	gap: 1.2rem;
+	margin-top: 2.2rem;
+	padding-top: 1.8rem;
+	border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.pub-stat strong {
+	display: block;
+	color: var(--accent);
+	font-family: var(--sans);
+	font-size: 1.15rem;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+.pub-stat span {
+	display: block;
+	color: var(--muted);
+	font-family: var(--mono);
+	font-size: 0.68rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
 }
 
 .work-list {
@@ -538,41 +565,84 @@ ul {
 }
 
 .work-row {
-	padding: clamp(1.8rem, 3.5vw, 2.7rem) 0;
+	padding: clamp(1.8rem, 3vw, 2.4rem) 0;
 	border-bottom: 1px solid var(--line);
+	transition: background-color 150ms ease;
 }
 
 .work-meta {
 	display: flex;
+	align-items: center;
 	justify-content: space-between;
-	gap: 1rem;
-	margin-bottom: 1rem;
-	color: var(--accent);
-	font-family: var(--mono);
-	font-size: 0.65rem;
-	text-transform: uppercase;
+	flex-wrap: wrap;
+	gap: 0.75rem;
+	margin-bottom: 0.85rem;
 }
 
-.work-meta span:last-child {
-	color: #777d79;
-	text-align: right;
+.work-meta-left {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 0.5rem;
+}
+
+.pub-year {
+	color: var(--accent);
+	font-family: var(--mono);
+	font-size: 0.8rem;
+	font-weight: 600;
+}
+
+.pub-venue {
+	color: #e0e4e2;
+	font-family: var(--sans);
+	font-size: 0.92rem;
+	font-weight: 600;
+}
+
+.pub-details {
+	color: #8c928e;
+	font-family: var(--mono);
+	font-size: 0.74rem;
+}
+
+.pub-badge {
+	padding: 0.2rem 0.6rem;
+	border: 1px solid rgba(131, 246, 212, 0.35);
+	background: rgba(131, 246, 212, 0.08);
+	color: var(--accent);
+	font-family: var(--mono);
+	font-size: 0.64rem;
+	font-weight: 500;
+	border-radius: 3px;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
 }
 
 .work-row h3 {
-	max-width: 42rem;
-	margin-bottom: 1rem;
-	font-size: clamp(1.35rem, 2vw, 1.9rem);
+	max-width: 48rem;
+	margin-bottom: 0.75rem;
+	font-size: clamp(1.18rem, 1.6vw, 1.45rem);
 	font-weight: 500;
-	letter-spacing: -0.035em;
-	line-height: 1.35;
+	letter-spacing: -0.025em;
+	line-height: 1.45;
+	color: var(--ink);
 }
 
-.work-row > p {
-	margin-bottom: 0;
-	color: #777d79;
+.pub-authors {
+	margin-bottom: 0.6rem;
+	color: #9da39f;
+	font-family: var(--sans);
+	font-size: 0.88rem;
+	line-height: 1.6;
+}
+
+.pub-topic {
+	display: inline-block;
+	color: #727774;
 	font-family: var(--mono);
-	font-size: 0.66rem;
-	text-transform: uppercase;
+	font-size: 0.68rem;
+	letter-spacing: 0.03em;
 }
 
 .people-layout {
