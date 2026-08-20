@@ -839,6 +839,71 @@ ul {
 	line-height: 1.9;
 }
 
+.pi-details {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: clamp(2.5rem, 5vw, 5rem);
+	margin-top: clamp(3.5rem, 6vw, 5.5rem);
+	padding-top: clamp(2.5rem, 5vw, 4rem);
+	border-top: 1px solid var(--line);
+}
+
+.pi-detail-label {
+	margin-bottom: 1.6rem;
+	color: var(--muted);
+	font-family: var(--mono);
+	font-size: 0.66rem;
+	font-weight: 500;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.pi-timeline {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.pi-timeline li {
+	display: grid;
+	grid-template-columns: 5.6rem 1fr;
+	gap: 1.2rem;
+	padding: 0.85rem 0;
+	border-bottom: 1px solid var(--line);
+}
+
+.pi-timeline li:first-child {
+	padding-top: 0;
+}
+
+.pi-timeline li:last-child {
+	border-bottom: none;
+}
+
+.pi-years {
+	padding-top: 0.15rem;
+	color: var(--accent);
+	font-family: var(--mono);
+	font-size: 0.66rem;
+	white-space: nowrap;
+}
+
+.pi-timeline strong {
+	display: block;
+	margin-bottom: 0.2rem;
+	font-size: 0.92rem;
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	line-height: 1.4;
+}
+
+.pi-timeline span:not(.pi-years) {
+	display: block;
+	color: var(--muted);
+	font-size: 0.8rem;
+	line-height: 1.55;
+}
+
 .projects-section {
 	background: var(--black);
 }
