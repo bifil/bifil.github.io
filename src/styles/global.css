@@ -248,7 +248,7 @@ ul {
 	margin-bottom: clamp(1.8rem, 3vw, 3rem);
 	color: var(--accent);
 	font-family: var(--mono);
-	font-size: 0.68rem;
+	font-size: 0.82rem;
 	font-weight: 500;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
@@ -730,7 +730,7 @@ ul {
 	margin-bottom: 1.2rem;
 	color: var(--muted);
 	font-family: var(--mono);
-	font-size: 0.66rem;
+	font-size: 0.82rem;
 	font-weight: 500;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
@@ -774,7 +774,7 @@ ul {
 .member-bio {
 	margin: 0;
 	color: var(--muted);
-	font-size: 0.88rem;
+	font-size: 0.97rem;
 	line-height: 1.7;
 }
 
@@ -783,7 +783,7 @@ ul {
 	margin-top: 0.45rem;
 	color: #6b706d;
 	font-family: var(--mono);
-	font-size: 0.68rem;
+	font-size: 0.75rem;
 }
 
 .member-cta {
@@ -798,7 +798,7 @@ ul {
 .member-cta p {
 	margin: 0;
 	color: var(--muted);
-	font-size: 0.86rem;
+	font-size: 0.95rem;
 	line-height: 1.7;
 }
 
@@ -827,7 +827,8 @@ ul {
 	margin-bottom: 2.5rem;
 	color: var(--accent);
 	font-family: var(--mono);
-	font-size: 0.72rem;
+	font-size: 0.85rem;
+	letter-spacing: 0.08em;
 	text-transform: uppercase;
 }
 
@@ -852,7 +853,7 @@ ul {
 	margin-bottom: 1.6rem;
 	color: var(--muted);
 	font-family: var(--mono);
-	font-size: 0.66rem;
+	font-size: 0.82rem;
 	font-weight: 500;
 	letter-spacing: 0.12em;
 	text-transform: uppercase;
@@ -866,9 +867,9 @@ ul {
 
 .pi-timeline li {
 	display: grid;
-	grid-template-columns: 5.6rem 1fr;
+	grid-template-columns: 6.4rem 1fr;
 	gap: 1.2rem;
-	padding: 0.85rem 0;
+	padding: 0.9rem 0;
 	border-bottom: 1px solid var(--line);
 }
 
@@ -881,27 +882,27 @@ ul {
 }
 
 .pi-years {
-	padding-top: 0.15rem;
+	padding-top: 0.2rem;
 	color: var(--accent);
 	font-family: var(--mono);
-	font-size: 0.66rem;
+	font-size: 0.78rem;
 	white-space: nowrap;
 }
 
 .pi-timeline strong {
 	display: block;
-	margin-bottom: 0.2rem;
-	font-size: 0.92rem;
+	margin-bottom: 0.25rem;
+	font-size: 1.02rem;
 	font-weight: 500;
 	letter-spacing: -0.01em;
-	line-height: 1.4;
+	line-height: 1.45;
 }
 
 .pi-timeline span:not(.pi-years) {
 	display: block;
 	color: var(--muted);
-	font-size: 0.8rem;
-	line-height: 1.55;
+	font-size: 0.9rem;
+	line-height: 1.6;
 }
 
 .projects-section {
