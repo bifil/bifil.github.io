@@ -738,8 +738,8 @@ ul {
 
 .team-grid {
 	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(220px, 260px));
-	gap: 1.4rem;
+	grid-template-columns: repeat(auto-fill, minmax(280px, 340px));
+	gap: 2rem;
 }
 
 .member-card {
@@ -760,30 +760,30 @@ ul {
 
 .member-photo {
 	width: 100%;
-	aspect-ratio: 1 / 1;
+	aspect-ratio: 4 / 5;
 	border-bottom: 1px dashed rgba(131, 246, 212, 0.25);
 	background:
-		radial-gradient(ellipse 90% 60% at 50% 35%, rgba(131, 246, 212, 0.06), transparent 65%),
+		radial-gradient(ellipse 120% 60% at 50% 0%, rgba(131, 246, 212, 0.09), transparent 60%),
 		var(--black-soft);
 }
 
 .member-info {
-	padding: 1.1rem 1.25rem 1.25rem;
+	padding: 1.4rem 1.6rem 1.6rem;
 }
 
 .member-bio {
 	margin: 0;
 	color: var(--muted);
-	font-size: 0.8rem;
-	line-height: 1.65;
+	font-size: 0.88rem;
+	line-height: 1.7;
 }
 
 .member-note {
 	display: block;
-	margin-top: 0.4rem;
+	margin-top: 0.45rem;
 	color: #6b706d;
 	font-family: var(--mono);
-	font-size: 0.62rem;
+	font-size: 0.68rem;
 }
 
 .member-cta {
@@ -1458,7 +1458,7 @@ ul {
 	}
 
 	.team-grid {
-		grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+		grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 	}
 
 	.apply-steps li {
