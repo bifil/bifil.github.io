@@ -296,3 +296,24 @@ export const journalPublications: Publication[] = [
 		topic: 'Kinetic Parameters & PET/MR',
 	},
 ];
+
+export interface PreparingPaper {
+	title: string;
+	authors: string;
+	status: 'Under review' | 'In preparation';
+	badge?: string;
+}
+
+export const preparingPapers: PreparingPaper[] = [
+	{
+		title: 'Time-aware frame-aligned diffusion for late dynamic PET frame prediction from early frames',
+		authors: 'YJ Seol, E Kim, SK Kang*, JS Lee',
+		status: 'Under review',
+		badge: 'Co-Corresponding',
+	},
+	{
+		title: 'D3M: data-consistent denoising diffusion model for real-world image denoising problems',
+		authors: 'SK Kang, JS Lee',
+		status: 'In preparation',
+	},
+];

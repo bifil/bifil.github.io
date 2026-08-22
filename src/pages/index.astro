@@ -1,6 +1,11 @@
 ---
 import '../styles/global.css';
-import { journalPublications } from '../data/publications';
+import { journalPublications, preparingPapers } from '../data/publications';
+
+const publicationsByYear = [...new Set(journalPublications.map((p) => p.year))].map((year) => ({
+	year,
+	items: journalPublications.filter((p) => p.year === year),
+}));
 
 const researchAreas = [
 	{
@@ -189,6 +194,7 @@ const structuredData = {
 
 				<div class="nav-links">
 					<a href="#home">Home</a>
+					<a href="#news">News</a>
 					<a href="#team">Team</a>
 					<a href="#research">Research</a>
 					<a href="#publications">Publications</a>
@@ -235,11 +241,38 @@ const structuredData = {
 				</div>
 			</section>
 
+			<section class="section news-section" id="news">
+				<div class="shell">
+					<div class="section-intro">
+						<p class="section-label">01 / News</p>
+						<h2>Latest from<br />the lab.</h2>
+					</div>
+
+					<article class="news-feature">
+						<div class="news-feature-header">
+							<span class="news-badge">Recruiting</span>
+							<span class="news-date">2026</span>
+						</div>
+						<h3>Now Recruiting Graduate Students & Postdocs</h3>
+						<p>
+							BIFIL is looking for motivated M.S. and Ph.D. students, as well as postdoctoral researchers,
+							who want to work on <strong>biomedical imaging</strong> and <strong>frontier AI</strong> —
+							inverse problems, generative models, and trustworthy quantification from theory to clinic.
+						</p>
+						<div class="news-actions">
+							<a class="text-link" href="/students/phd">Ph.D. Program <span>↗</span></a>
+							<a class="text-link" href="/students/ms">M.S. Program <span>↗</span></a>
+							<a class="text-link" href="mailto:skang@dgist.ac.kr?subject=Postdoc%20Inquiry%20to%20BIFIL%20(DGIST)">Postdoc Inquiries <span>↗</span></a>
+						</div>
+					</article>
+				</div>
+			</section>
+
 			<section class="section people-section" id="team">
 				<span id="people" class="section-anchor"></span>
 				<div class="shell people-layout">
 					<div>
-						<p class="section-label">01 / Team & Leadership</p>
+						<p class="section-label">02 / Team & Leadership</p>
 						<figure class="pi-photo">
 							<img
 								src="/images/pi.webp"
@@ -401,7 +434,7 @@ const structuredData = {
 			<section class="section" id="research">
 				<div class="shell">
 					<div class="section-intro">
-						<p class="section-label">02 / Research</p>
+						<p class="section-label">03 / Research</p>
 						<h2>One idea,<br />three directions.</h2>
 						<p>Infer what matters when measurements are noisy, sparse, or incomplete.</p>
 					</div>
@@ -427,7 +460,7 @@ const structuredData = {
 				<span id="work" class="section-anchor"></span>
 				<div class="shell work-layout">
 					<div class="work-heading">
-						<p class="section-label">03 / Publications</p>
+						<p class="section-label">04 / Publications</p>
 						<h2>Theory that<br />travels.</h2>
 						<!-- <p>Peer-reviewed journal articles in computational imaging, nuclear medicine, and clinical AI.</p> -->
 						<!-- <div class="pub-summary-stats">
@@ -443,21 +476,41 @@ const structuredData = {
 					</div>
 
 					<div class="work-list">
-						{journalPublications.map((item) => (
-							<article class="work-row">
-								<div class="work-meta">
-									<div class="work-meta-left">
-										<span class="pub-year">{item.year}</span>
-										<span class="pub-venue">{item.venue}</span>
-										{item.details && <span class="pub-details">· {item.details}</span>}
-									</div>
-									{item.badge && <span class="pub-badge">{item.badge}</span>}
-								</div>
-								<h3>{item.title}</h3>
-								<p class="pub-authors">{item.authors}</p>
-								{item.topic && <span class="pub-topic">{item.topic}</span>}
-							</article>
+						{publicationsByYear.map((group) => (
+							<div class="pub-year-group">
+								<p class="pub-year-heading">{group.year}</p>
+								{group.items.map((item) => (
+									<article class="work-row">
+										<div class="work-meta">
+											<div class="work-meta-left">
+												<span class="pub-venue">{item.venue}</span>
+												{item.details && <span class="pub-details">· {item.details}</span>}
+											</div>
+											{item.badge && <span class="pub-badge">{item.badge}</span>}
+										</div>
+										<h3>{item.title}</h3>
+										<p class="pub-authors">{item.authors}</p>
+										{item.topic && <span class="pub-topic">{item.topic}</span>}
+									</article>
+								))}
+							</div>
 						))}
+
+						<div class="pub-year-group">
+							<p class="pub-year-heading">In Preparation</p>
+							{preparingPapers.map((item) => (
+								<article class="work-row work-row-preparing">
+									<div class="work-meta">
+										<div class="work-meta-left">
+											<span class="pub-venue">{item.status}</span>
+										</div>
+										{item.badge && <span class="pub-badge">{item.badge}</span>}
+									</div>
+									<h3>{item.title}</h3>
+									<p class="pub-authors">{item.authors}</p>
+								</article>
+							))}
+						</div>
 					</div>
 				</div>
 			</section>
@@ -466,7 +519,7 @@ const structuredData = {
 				<span id="students" class="section-anchor"></span>
 				<div class="shell">
 					<div class="section-intro">
-						<p class="section-label">04 / Projects</p>
+						<p class="section-label">05 / Projects</p>
 						<h2>Ongoing<br />research.</h2>
 						<!-- <p>
 							Newly awarded grants and active research projects will be announced here as they begin.
