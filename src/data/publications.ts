@@ -315,5 +315,6 @@ export const preparingPapers: PreparingPaper[] = [
 		title: 'D3M: data-consistent denoising diffusion model for real-world image denoising problems',
 		authors: 'SK Kang, JS Lee',
 		status: 'In preparation',
+		badge: 'First Author',
 	},
 ];

@@ -14,7 +14,6 @@ const researchAreas = [
 		description:
 			'We design principled algorithms that recover structure—and uncertainty—from incomplete measurements.',
 		tags: ['Inverse problems', 'Diffusion & flow', 'Posterior sampling'],
-		related: 'Anatomy-guided PET reconstruction using the ℓ1-Bowsher prior (PMB 2021)',
 	},
 	{
 		number: '02',
@@ -22,7 +21,6 @@ const researchAreas = [
 		description:
 			'We turn PET, SPECT, CT, and MRI into reliable quantitative evidence for research and clinical decisions.',
 		tags: ['PET / SPECT', 'Quantitative AI', 'Clinical translation'],
-		related: 'Fast and accurate amyloid brain PET quantification without MRI (JNM 2023)',
 	},
 	{
 		number: '03',
@@ -30,7 +28,6 @@ const researchAreas = [
 		description:
 			'We extend measurement-aware intelligence to systems that must perceive, reason, and act in the physical world.',
 		tags: ['Robot learning', 'VLA', 'Perception–action'],
-		related: 'Vision–language–action models under partial, noisy observation',
 	},
 ];
 
@@ -389,13 +386,6 @@ const structuredData = {
 					</div>
 				</div>
 
-				<div class="shell team-groups">
-					<p class="team-founding">
-						BIFIL is a newly founded lab — our first Ph.D., M.S., and undergraduate members will be
-						announced here. Interested in joining as a founding member?
-						<a class="inline-link" href="#news">See the recruiting note</a>.
-					</p>
-				</div>
 			</section>
 
 			<section class="section" id="research">
@@ -413,7 +403,6 @@ const structuredData = {
 								<div>
 									<h3>{area.title}</h3>
 									<p>{area.description}</p>
-									{area.related && <p class="research-related"><span>Related</span>{area.related}</p>}
 									<ul aria-label={`${area.title} topics`}>
 										{area.tags.map((tag) => <li>{tag}</li>)}
 									</ul>
