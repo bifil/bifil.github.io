@@ -582,17 +582,22 @@ ul {
 	letter-spacing: 0.08em;
 }
 
-.pub-year-group .work-row {
+.pub-year-items {
+	display: flex;
+	flex-direction: column;
+}
+
+.pub-year-items .work-row {
 	padding: 0 0 clamp(1.6rem, 2.5vw, 2.2rem);
 	border-bottom: none;
 }
 
-.pub-year-group .work-row + .work-row {
+.pub-year-items .work-row + .work-row {
 	padding-top: clamp(1.6rem, 2.5vw, 2.2rem);
 	border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-.pub-year-group .work-row:last-child {
+.pub-year-items .work-row:last-child {
 	padding-bottom: 0;
 }
 

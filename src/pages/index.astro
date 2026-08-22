@@ -476,41 +476,45 @@ const structuredData = {
 					</div>
 
 					<div class="work-list">
-						{publicationsByYear.map((group) => (
-							<div class="pub-year-group">
-								<p class="pub-year-heading">{group.year}</p>
-								{group.items.map((item) => (
-									<article class="work-row">
+						<div class="pub-year-group">
+							<p class="pub-year-heading">In Preparation</p>
+							<div class="pub-year-items">
+								{preparingPapers.map((item) => (
+									<article class="work-row work-row-preparing">
 										<div class="work-meta">
 											<div class="work-meta-left">
-												<span class="pub-venue">{item.venue}</span>
-												{item.details && <span class="pub-details">· {item.details}</span>}
+												<span class="pub-venue">{item.status}</span>
 											</div>
 											{item.badge && <span class="pub-badge">{item.badge}</span>}
 										</div>
 										<h3>{item.title}</h3>
 										<p class="pub-authors">{item.authors}</p>
-										{item.topic && <span class="pub-topic">{item.topic}</span>}
 									</article>
 								))}
 							</div>
-						))}
-
-						<div class="pub-year-group">
-							<p class="pub-year-heading">In Preparation</p>
-							{preparingPapers.map((item) => (
-								<article class="work-row work-row-preparing">
-									<div class="work-meta">
-										<div class="work-meta-left">
-											<span class="pub-venue">{item.status}</span>
-										</div>
-										{item.badge && <span class="pub-badge">{item.badge}</span>}
-									</div>
-									<h3>{item.title}</h3>
-									<p class="pub-authors">{item.authors}</p>
-								</article>
-							))}
 						</div>
+
+						{publicationsByYear.map((group) => (
+							<div class="pub-year-group">
+								<p class="pub-year-heading">{group.year}</p>
+								<div class="pub-year-items">
+									{group.items.map((item) => (
+										<article class="work-row">
+											<div class="work-meta">
+												<div class="work-meta-left">
+													<span class="pub-venue">{item.venue}</span>
+													{item.details && <span class="pub-details">· {item.details}</span>}
+												</div>
+												{item.badge && <span class="pub-badge">{item.badge}</span>}
+											</div>
+											<h3>{item.title}</h3>
+											<p class="pub-authors">{item.authors}</p>
+											{item.topic && <span class="pub-topic">{item.topic}</span>}
+										</article>
+									))}
+								</div>
+							</div>
+						))}
 					</div>
 				</div>
 			</section>
