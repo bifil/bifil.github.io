@@ -13,15 +13,6 @@ export interface Publication {
 
 export const journalPublications: Publication[] = [
 	{
-		id: 29,
-		year: '2026',
-		title: 'WHEN DOES ADAPTIVE TEST-TIME AUGMENTATION PAY OFF? A MATCHED EXECUTION STUDY IN DENSE VISION',
-		authors: 'SK Kang',
-		venue: 'Under review',
-		badge: 'Featured',
-		topic: 'TTA and actionable insights',
-	},
-	{
 		id: 28,
 		year: '2026',
 		title: 'Development and first-in-human imaging results of PHAROS: a versatile high-resolution TOF/DOI PET scanner for brain, breast, and extremity imaging',
@@ -314,6 +305,13 @@ export interface PreparingPaper {
 }
 
 export const preparingPapers: PreparingPaper[] = [
+	{
+		title: 'WHEN DOES ADAPTIVE TEST-TIME AUGMENTATION PAY OFF? A MATCHED EXECUTION STUDY IN DENSE VISION',
+		authors: 'SK Kang',
+		status: 'Under review',
+		badge: 'Featured',
+		// topic: 'TTA and actionable insights',
+	},
 	{
 		title: 'Time-aware frame-aligned diffusion for late dynamic PET frame prediction from early frames',
 		authors: 'YJ Seol, E Kim, SK Kang*, JS Lee',
