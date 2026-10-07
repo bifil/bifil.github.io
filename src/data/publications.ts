@@ -18,7 +18,7 @@ export const journalPublications: Publication[] = [
 		authors: 'YJ Seol, E Kim, SK Kang*, JS Lee',
 		venue: 'Physics in Medicine & Biology',
 		details: 'Accepted',
-		badge: 'Co-Corresponding',
+		badge: 'Corresponding',
 		topic: 'PET denoising',
 	},
 	{
@@ -84,7 +84,7 @@ export const journalPublications: Publication[] = [
 		venue: 'Journal of Nuclear Medicine',
 		details: '65(10): 1645–1651',
 		note: 'Co-corresponding author',
-		badge: 'Co-Corresponding',
+		badge: 'Corresponding',
 		topic: 'FDG PET Quantification',
 	},
 	{
