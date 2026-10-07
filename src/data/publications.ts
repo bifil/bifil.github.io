@@ -13,6 +13,15 @@ export interface Publication {
 
 export const journalPublications: Publication[] = [
 	{
+		id: 29,
+		title: 'Time-aware frame-aligned diffusion for late dynamic PET frame prediction from early frames',
+		authors: 'YJ Seol, E Kim, SK Kang*, JS Lee',
+		venue: 'Physics in Medicine & Biology',
+		details: 'Accepted',
+		badge: 'Co-Corresponding',
+		topic: 'PET denoising',
+	},
+	{
 		id: 28,
 		year: '2026',
 		title: 'Development and first-in-human imaging results of PHAROS: a versatile high-resolution TOF/DOI PET scanner for brain, breast, and extremity imaging',
@@ -312,12 +321,6 @@ export const preparingPapers: PreparingPaper[] = [
 	// 	badge: 'Featured',
 	// 	// topic: 'TTA and actionable insights',
 	// },
-	{
-		title: 'Time-aware frame-aligned diffusion for late dynamic PET frame prediction from early frames',
-		authors: 'YJ Seol, E Kim, SK Kang*, JS Lee',
-		status: 'Under review',
-		badge: 'Co-Corresponding',
-	},
 	{
 		title: 'D3M: data-consistent denoising diffusion model for real-world image denoising problems',
 		authors: 'SK Kang, JS Lee',
