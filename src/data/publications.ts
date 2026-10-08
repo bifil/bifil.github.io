@@ -14,6 +14,7 @@ export interface Publication {
 export const journalPublications: Publication[] = [
 	{
 		id: 29,
+		year: '2026',
 		title: 'Time-aware frame-aligned diffusion for late dynamic PET frame prediction from early frames',
 		authors: 'YJ Seol, E Kim, SK Kang*, JS Lee',
 		venue: 'Physics in Medicine & Biology',
